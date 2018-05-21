@@ -1,0 +1,1034 @@
+\documentclass[11pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{tikz-cd}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath,amsthm,amssymb,mathrsfs,mathabx}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{color} 
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{fixltx2e}
+\usepackage{tcolorbox}
+\usepackage{jmhmacros}
+
+\graphicspath{ {/home/pv/Pictures/latex/} }
+
+\begin{document}
+
+\title{Theories, interpretations, and pretoposes}
+\author{Jesse Han}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+  We explicate the relationships between interpretations of first-order theories, interpretations of first-order structures, and elementary functors between categories of definable sets and their pretopos completions.
+\end{abstract}
+
+\tableofcontents
+
+\subsection*{Notation and conventions}
+\begin{itemize}
+\item Unless explicitly stated otherwise, we are always working in multisorted classical first-order logic; every sort $S$ has its own equality symbol $=_S$.
+\item Unless explicitly stated otherwise, definable means definable without parameters.
+\item Unadorned variables in formulas will generally stand for finite tuples of appropriately-sorted variables.
+\item Similarly, when we say ``sort'' we mean a finite tuple of the basic sorts of the language. We allow the empty finite tuple of sorts, and denote it by $1$.
+\item If we have already mentioned a tuple of variables $x$, then we will write $S_x$ for the sort corresponding to $x$.
+\item Greek letters (except for $\sigma$ and $\rho$, which will usually denote automorphisms) will usually mean first-order formulas.
+\item If $\mc{L}$ is a first-order language, we write $\msf{Sorts}(\mc{L})$, $\msf{Functions}(\mc{L})$, $\msf{Relations}(\mc{L})$, $\msf{Constants}(\mc{L})$, and $\msf{Formulas}(\mc{L})$ to mean the collections of sorts, function symbols, relation symbols, constant symbols, and first-order $\mc{L}$-formulas, respectively.
+\end{itemize}
+
+\section{Theories and abstract interpretations}
+
+\definition{\label{def-theory}
+Fix a first-order language $\mc{L}$. An \textbf{$\mc{L}$-theory} (when we wish to avoid emphasizing the ambient language, we will just say \tbf{theory}) is a set of $\mc{L}$-sentences.
+}
+\definition{
+  \label{def-ambient-sort}
+  If $\varphi$ is an $\mc{L}$-formula, we say that the \tbf{sort}, or \tbf{ambient sort}, of $\varphi$ is the sort $S_x$ corresponding to the tuple $x$ of free variables in $\varphi$. If $\varphi$ is a sentence, i.e. an $\mc{L}$-formula with no free variables, we understand that in this case the ambient sort of $\varphi$ is the empty sort.
+  }
+
+\definition{
+  \label{def-abstract-interpretation}
+  Let $T$ be an $\mc{L}$-theory and let $T'$ be an $\mc{L}'$-theory. An \textbf{abstract interpretation} $I$ of $T$ in $T'$, written $I : T \to T'$, consists of the following data:
+  \begin{enumerate}
+  \item For each sort $S \in \msf{Sorts}(\mc{L})$, we assign an $\mc{L}'$-formula $I(S)$, with the convention that the empty sort $1$ of $T$ is sent to the empty sort $1$ of $T'$.
+
+    We also require this assignment to preserve the operation of forming finite tuples of sorts: if the basic sorts $B_1$ and $B_2$ are sent to the sorts $S_1$ and $S_2$, then the sort $B_1B_2$ is sent to the sort $S_1S_2$ (where we write sorts right next to each other to indicate their concatenation as tuples of basic sorts).
+  \item For each basic non-logical symbol $c \in \msf{Constants}(\mc{L})$, $R \in \msf{Relations}(\mc{L})$, or $f \in \msf{Functions}(\mc{L})$, we assign an $\mc{L}'$-formula $I(c)$ (resp. $I(R)$, $I(f)$(, such that the assignment is compatible with sorts: if a nonlogical symbol $X$ belongs to the sort $S_X$, then $I(X)$ is a subset of the sort $I(S_X)$.
+    \item By an induction on complexity of formulas, the above assignments determine an assignment of $\mc{L}$-formulas to $\mc{L}'$-formulas, in particular of $\mc{L}$-sentences to $\mc{L}'$-sentences. We finally require that if $\psi$ is an $\mc{L}$-sentence such that $T \models \psi$, then $T' \models I(\psi)$.
+  \end{enumerate}
+}
+
+\definition{
+  \label{def-strict-abstract-interpretation}
+  If an abstract interpretation $I : T \to T'$ interprets all equalities $x = y$ as equivalence relations with singleton equivalence classes, we say that $I$ is a \tbf{strict} abstract interpretation. This is sometimes called a \tbf{definition} of $T$ in $T'$.
+  }
+  \section{Structures and concrete interpretations}
+  \definition{\label{def-model}
+    Let $T$ be an $\mc{L}$-theory. A \tbf{model} $M$ of $T$ consists of the following data:
+    \begin{enumerate}
+    \item For each sort $S \in \msf{Sorts}(\mc{L})$, we assign a set $M(S)$, with the convention that the empty sort $1$ of $T$ is sent to the empty product $1$ of $\Set$.
+
+      We also require that this assignment preserves the operation of forming finite tuples of sorts: if the basic sorts $B_1$ and $B_2$ are sent to the set $M(B_1)$ and $M(B_2)$, then the sort $B_1B_2$ is sent to the set $M(B_1B_2) = M(B_1) \times M(B_2)$.
+      
+    \item For each basic non-logical symbol $c \in \msf{Constants}(\mc{L})$, $R \in \msf{Relations}(\mc{L})$, or $f \in \msf{Functions}(\mc{L})$, we assign a set $M(c)$ (resp. $M(R)$, $M(f)$), such that the assignment is compatible with sorts: if a nonlogical symbol $X$ belongs to the sort $S_X$, then $M(X)$ belongs to $M(S_X)$.
+    \item By an induction on complexity of formulas, the above assignments determine an assignment of $\mc{L}$-formulas to sets. Since the assignments above respect sorts, any $\mc{L}$-sentence, which lives in the empty sort $1$, will be sent to a subset of the terminal set $1$, of which there are only two possibilities, the entire terminal set $1$, or $\emptyset$. We finally require that if $\psi$ is an $\mc{L}$-sentence such that $T \models \psi$, then $M(\psi) = 1.$
+    \end{enumerate}
+    }
+\definition{\label{def-structure}
+Let $\mc{L}$ be a language. An \textbf{$\mc{L}$-structure} is a model $M$ of the empty $\mc{L}$-theory.
+}
+
+\definition{
+\label{def-theory-of-a-structure}
+Let $M$ be an $\mc{L}$-structure. By \myref{Definition}{def-model}, $M$ includes the data of an function $\msf{Sentences}(\mc{L}) \to \{\emptyset, 1\}$. The \tbf{$\mc{L}$-theory} of $M$, written
+  $\Th(M)$, is the preimage of $1$ along this function:
+  $$
+\Th(M) \dfeq \{\psi \in \msf{Sentences}(\mc{L}) \stbar M(\psi) = 1\}.
+  $$
+}
+
+\definition{
+  \label{def-literal-definable-set}
+  Let $M$ be an $\mc{L}$-structure. A \tbf{definable set} $U$ of $M$ is some set $U$ such that $U = M(\varphi(x))$ for some $\mc{L}$-formula $\varphi(x)$.
+  }
+
+\definition{
+  \label{def-concrete-interpretation}
+  Let $M$ be an $\mc{L}$-theory, and let $M'$ be an $\mc{L}'$-theory.
+  A \textbf{concrete interpretation} $(f, f^*)$ of $M$ in $M'$, written $(f, f^*) : M \to M'$, consists of the following data:
+  \begin{enumerate}
+  \item For each sort $S$ of $\mc{L}$, we assign a definable set $U_S$ of $M'$ and a surjective function $f_S : U_S \twoheadrightarrow M(S)$.
+
+    We also require that this assignment preserves the operation of forming finite tuples of sorts: if the basic sorts $B_1$ and $B_2$ are assigned the functions $f_{B_1} : U_{B_1} \twoheadrightarrow B_1$ and $f_{B_2} : U_{B_2} \twoheadrightarrow B_2$, then the sort $B_1B_2$ is assigned $U_{B_1B_2} = U_{B_1} \times U_{B_2}$ and the function $f_{B_1B_2} = f_{B_1} \times f_{B_2}$.
+  \item These surjective functions must satisfy the following property: for every sort $S$ and for definable subset $V \subseteq M(S)$, the preimage $f^{*}V$ of $V$ along $f$ is definable in $M'$.
+  \end{enumerate}
+}
+
+\definition{
+If a concrete interpretation $(f, f^*)$ additionally satisfies that $f$ is injective, we say that $(f, f^*)$ is a \tbf{strict concrete interpretation}.
+}
+
+\remark{
+  Since we have defined models so that models always interpret tuples of basic sorts as products of basic sorts, this gives the correct definition of a model in the $1$-sorted case, when there is a unique basic sort.
+
+  An important consequence of the fact that models interpret tuples of basic sorts as products of basic sorts is that the definable projection functions from tuples of sorts to their subtuples are interpreted as literal projections in any model.
+}
+
+\example{
+Let $M$ be an $\mc{L}$-structure, and let $\sigma : M \to M$ be an automorphism. Then $\sigma_S : M(S) \to M(S)$ is a strict concrete interpretation $(\sigma, \sigma^*) : M \to M$. Since definable sets are invariant under automorphisms, $\sigma^*$ is the identity.
+  }
+
+\section{Categories of definable sets and elementary functors}The starting point for first-order categorical logic is the identification of a theory with its category of definable sets.
+
+\definition{\label{def-def-t}Let \(T\) be a first-order \(\mc{L}\)-theory. The \tbf{category of definable sets} $\Def(T)$ comprises:
+\[\Def(T) \dfeq \begin{cases}
+\text{Objects: } \bigslant{\msf{Formulas}(\mc{L})}{\sim}, \text{ where } \phi(x) \sim \psi(x) \iff T \models \phi(x) \leftrightarrow \psi(x),\\
+\text{Morphisms: } \bigslant{\{\phi \in \msf{Formulas}(\mc{L}) \stbar T \models \phi \text{ is a function \(\varphi(x) \to \psi(y)\)}\}}{\sim.}
+\end{cases}\]
+}
+
+\remark{
+Above, we are defining morphisms to be equivalence classes of graphs of definable functions, where we are using the same equivalence relation as we did for objects. By the completeness theorem for first-order logic, the notion of equivalence of formulas proved in defining the objects of $\Def(T)$ is the same as \emph{$T$-provable equivalence}, i.e. $\varphi(x) \sim \psi(y) \iff T \entails \varphi(x) \leftrightarrow \psi(x)$. By the downward L\"owenheim-Skolem theorem, it also suffices to check $\sim$-equivalence by checking if two formulas have the same points on just those models whose sizes are less than or equal to the size of the theory.
+}
+
+\remark{
+Every sort $S$ has its own equality symbol $=_S$, and the formula $x =_Sx$ represents $S$ in $\Def(T)$. Sorts are ``maximal'' objects in $\Def(T)$; just as, syntactically, they provide the contexts in which we reason about formulas, every definable set $A \in \Def(T)$ belongs to, and thus embeds into, a sort.
+}
+
+\notation{
+From now on, unless if we are explicitly working in a model, ``definable set'' will mean an equivalence class of formulas in the above sense.
+  }
+
+We now note some important features of the category $\Def(T)$:
+
+\proposition{\label{def-t-has-finite-limits}
+$\Def(T)$ has all finite limits.
+}
+\begin{proof}
+  By the canonical product-equalizer decomposition for limits (see e.g. \cite{maclane-cwm}), it suffices to see that $\Def(T)$ has all equalizers and finite products.
+
+  Given a pair of morphisms in $\Def(T)$, as in $f,g : \varphi(x) \rightrightarrows \psi(y)$, we can write a first-order formula $\eq(f,g)$ with a canonical inclusion $\eq(f,g) \hookrightarrow \varphi(x)$ whose points in any model will be the equalizer of the functions $f$ and $g$: $\eq(f,g) \overset{\opn{df}}{\equiv} f(x) =_{S_{x}} g(x)$. We will show that $\eq(f,g)$ has the expected universal property. So suppose the universal property fails, and we have in $\Def(T)$ a commutative diagram like this:
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+   \eq(f,g) \arrow{r}\& X \arrow[shift right = 0.50ex,swap]{r}{f} \arrow[shift left = 0.50ex]{r}{g}\& Y \\
+   E \arrow[shift left = 0.50ex]{u}{h_1} \arrow[shift right = 0.50ex, swap]{u}{h_2} \arrow{ur} \& \&
+    \end{tikzcd}
+    $$
+    such that $h_1 \neq h_2$. Then by definition of the equivalence relation defining objects and morphisms in $\Def(T)$, this is witnessed by a model $M$ such that we can take two formulas $\phi_1(x_1, x_2)$ and $\phi_2(x_1, x_2)$ representing the graphs of $h_1$ and $h_2$ and $M(\phi_1) \neq M(\phi_2)$. This contradicts that $M(\eq(f,g))$ is the equalizer of $M(X \rightrightarrows Y)$. We conclude that $\Def(T)$ has all equalizers.
+
+    Now we will show that $\Def(T)$ has all finite products. We note that the empty product (i.e. a terminal object) is the equivalence class of the empty sort, which we think of as being the ambient sort for the empty tuple of variables; we can view \emph{any} finite tuple of variables as being padded by an empty variable of the empty sort, and so \emph{any} formula is vacuously a definable function from itself to the empty sort, so the empty sort is a terminal object. Now, for $n \geq 1$, let $\varphi_1(x_1), \dots, \varphi_n(x_n)$ be a finite collection of $\mc{L}$-formulas. Then, just as for the case of equalizers, we can write a first-order formula $(\varphi_1 \times \dots \times \varphi_n)(x_1, \dots, x_n)$ whose points in any model will be the product of the sets $\varphi_1(x_1), \dots, \varphi_n(x_n)$: replacing $x_i$ with distinct variables of the same sort as necessary, so that $x_1, \dots, x_n$ are all distinct (this respects $T$-provable equivalence), put
+    $$
+\varphi_1 \times \dots \times \varphi_n(x_1, \dots, x_n) \overset{\opn{df}}{\equiv} \varphi_1(x_1) \land \dots \land \varphi_n(x_n).
+$$
+(Note that in any model, this is a subset of $M(S_{x_1 \dots x_n}) = M(S_{x_1}) \times \dots \times M(S_{x_n})$.)
+
+Now we can repeat the argument we used for equalizers word-for-word, except replacing equalizer diagrams with product diagrams throughout. We conclude that $\Def(T)$ has all finite products.
+\end{proof}
+
+\definition{
+  Let $f : X \to Y$ be a morphism in some category. The \tbf{image} of $f$, if it exists, is a subobject $I \hookrightarrow Y$ of $Y$ such that there is a factorization of $f$ through $I$, and if $f$ factors through any other subobject $I'$ of $Y$, then there is a unique map of subobjects $I \overset{c}{\to} I'$ making the diagram
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+   X \arrow{ddr} \arrow{r}{f} \arrow{dr} \& Y\\
+    \& I' \arrow{u}\\
+ \&    I \arrow[bend right=25ex]{uu} \arrow[dashed]{u}{c}
+    \end{tikzcd}
+$$
+    commute.
+  }
+
+\proposition{\label{def-t-has-images}
+Every morphism $f : \varphi(x) \to \psi(y)$ has an image.
+}
+\begin{proof}
+We claim that the image of a definable function $f$ is described by the formula $\opn{im}(f) \overset{\opn{df}}{\equiv} \exists x \Gamma(f)(x,y)$. This is equipped with the canonical projection to $\psi(y)$. By how we defined models' interpretations of formulas built with existential quantifiers, $M(\exists x \Gamma(f)(x,y))$ is the literal projection of $M(\Gamma(f)(x,y)$ to $M(\psi(y))$, and is therefore the image of $M(f)$. The same argument we used for equalizers and limits then shows that $\opn{im}(f)$ is the image of $f$ in $\Def(T)$.
+\end{proof}
+
+\definition{
+Let $S_1, \dots, S_n$ be finitely many subobjects of $X$ in some category. The \tbf{finite sup} of $S_1, \dots, S_n$, if it exists, is a subobject $S_1 \lor \dots \lor S_n$ of $X$ such that any other subobject $S'$ containing $S_1, \dots, S_n$ contains $S_1 \lor \dots \lor S_n$.
+}
+
+\proposition{\label{def-t-has-finite-sups}
+$\Def(T)$ has all finite sups.
+}
+
+\begin{proof}
+Note that since the empty set is a definable subset of every definable set, $\Def(T)$ always has empty sups. It then suffices to obtain binary sups. Let $\varphi(x)$ and $\psi(x)$ be subobjects of $\theta(x)$ in $\Def(T)$. Then $T \models \varphi(x) \rightarrow \theta(x) \&\& \psi(x) \rightarrow \theta(x)$; therefore, $T \models \varphi(x) \lor \psi(x) \rightarrow \theta(x)$. In every model $M$ of $T$, $M(\varphi(x) \lor \psi(x))$ is the sup of the subsets $M(\varphi(x)), M(\psi(x))$ of $M(\theta(x)$. Now we argue as in the previous two propositions: if this were not true in $\Def(T)$, this must be witnessed in a model, an impossibility, so $\varphi(x) \lor \psi(x)$ is the sup of $\varphi(x)$ and $\psi(x)$ in $\Def(T)$.
+\end{proof}
+
+\definition{
+  Let $\mbf{C}$ be a category with pullbacks.
+
+  \begin{enumerate}
+    \item Let $f : X \to Y$ be a morphism in $\mbf{C}$ which has an image. We say that the \tbf{image $\opn{im}(f)$ is stable} if for every morphism $g : Z \to Y$, the two horizontal maps at the bottom of the diagram of pullback squares
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+   X \arrow{r}{y} \& Y \& \opn{im}(f) \arrow[swap]{l} \\
+   X \times_Y Z \arrow{u} \arrow{r} \& Z \arrow[swap]{u}{g} \& \opn{im}(f) \times_Y Z \arrow{l} \arrow{u}
+    \end{tikzcd}
+  $$
+  have the same image (colloquially, ``the pullback of the image is the image of the pullback'').
+\item Let $S_1, \dots, S_n$ be subobjects of $B$ in $\mbf{C}$ which have a finite sup. We say that the \tbf{finite sup $\bigvee_{i \leq n} S_i$ is stable} if for every morphism $g : Z \to B$, the pullback of $\bigvee_{i \leq n} S_i$ along $g$, as in the pullback diagram
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+\bigvee_{i \leq n} S_i \arrow{r}    \& B \\
+\left(\bigvee_{i \leq n} S_i\right) \times_B Z \arrow{r} \arrow{u}    \& Z \arrow{u}
+    \end{tikzcd}
+    $$
+    is the finite sup of the pullbacks of the $S_i$ (this makes sense because the pullback of a monomorphism is always a monomorphism).
+  \end{enumerate}
+
+  We say that \tbf{$\mbf{C}$ has stable images and stable finite sups} if $\mbf{C}$ has all images and finite sups, and they are all stable.
+}
+
+\proposition{\label{def-t-has-stable-images-and-stable-finite-sups}
+$\Def(T)$ has stable images and stable finite sups.
+}
+\begin{proof}
+  Let $f : X \to Y$ and $g : Z \to Y$ be morphisms in $\Def(T)$. The pullback of $X$ and $Z$ with respect to $f$ and $g$ is the equalizer of the following pair of maps:
+  $$
+X \times Z \overset{f \circ \pi_X}{\underset{g \circ \pi_Z}{\rightrightarrows}} Y
+$$
+and can therefore be represented by the formula $\left(f(x) = g(z)\right)$, and the image of its canonical projection to $Z$ can be represented by $\exists x \left(f(x) = g(z)\right)$.
+
+Similarly, the image of $\im(f) \times_Y Z$ in $Z$ is represented by the formula $\exists y \left(y = g(z) \right)$. For any model $M$, it is true that $M \medleft \exists x \left(f(x) = g(z) \right) \medright = M \medleft \exists y \left(y = g(z) \right) \medright$. By the completeness theorem for first-order logic, $T \models \exists x \left(f(x) = g(z) \right) \leftrightarrow \exists y \left(y = g(z) \right)$. Since $f$ and $g$ were arbitrary, we conclude $\Def(T)$ has stable images.
+
+Now, let $S_1, \dots, S_n$ be subobjects of $B$ in $\Def(T)$. It is easy to check, using the description of pullbacks we used in the previous paragraph, that the pullback of any subobject of $B$ along a map $g : Z \to B$ is just the (formula describing the) preimage of that subobject along $g$. Since models interpret finite sups as unions, and in the category of sets, taking preimages commute with unions, then we may argue as before using the completeness theorem that finite sups are stable. This applies equally well to the empty sup; we conclude $\Def(T)$ has stable finite sups.
+\end{proof}
+
+\definition{
+  Let $\mbf{C}$ be a category with pullbacks and finite sups.
+
+  We say that $\mbf{C}$ is \tbf{Boolean} if for every subobject $S$ of $B$ in $\mbf{C}$, there exists another subobject $\neg S$ such that the pullback of $S$ and $\neg S$ over $B$ is the empty sup in $B$, and the finite sup $S \vee \neg S$ is all of $B$.
+}
+
+\proposition{\label{def-t-is-boolean}
+$\Def(T)$ is Boolean.
+}
+
+\begin{proof}
+If $T \models \varphi(x) \rightarrow \psi(x)$, then $$T \models \neg \medleft\varphi(x) \land (\neg \varphi(x)) \land B\medright$$ and $$T \models \varphi(x) \lor \left(\neg \varphi(x) \land B\right) \leftrightarrow B.$$
+  \end{proof}
+
+  In \cite{makkai-reyes}, Makkai and Reyes showed that the properties we studied above actually \emph{characterize} those categories of the form $\Def(T)$ for some theory $T$. They call such categories (Boolean) \emph{logical categories}.
+
+  \definition{\label{def-logical-category}
+A category $\mbf{C}$ is a \tbf{logical category} if it has finite limits, has stable images, and has stable sups.
+}
+
+\proposition{
+Let $T$ be a theory. Then $\Def(T)$ is a Boolean logical category.
+}
+\begin{proof}
+We saw in Propositions \ref{def-t-has-finite-limits}, \ref{def-t-has-images}, \ref{def-t-has-finite-sups}, \ref{def-t-has-stable-images-and-stable-finite-sups}, and \ref{def-t-is-boolean} that for every theory $T$, $\Def(T)$ has finite limits, stable images, stable sups, and is Boolean.
+\end{proof}
+
+By requiring the preservation of those categorical properties which define logical categories, we can define what it means for a functor to be a morphism of logical categories. \footnote{In \cite{makkai-reyes} these are called, aptly, \emph{logical functors}, but we follow the terminology of \cite{makkai-sdfol}, wherein logical functors between pretoposes are called \emph{elementary}.}
+
+\definition{
+Let $\mbf{C}$ and $\mbf{C}'$ be logical categories. An \tbf{elementary functor} $\mbf{C} \to \mbf{C}'$ is a functor which preserves finite limits, finite sups of subobjects, and images.
+}
+
+Elementary functors preserve complements whenever they exist:
+
+\lemma{
+  \label{lemma-elementary-functors-preserve-complements}
+Let $A$ be a subobject of $C$ in a logical category $\mbf{C}$. Suppose that $A$ has a complement $B$ inside $C$. Let $I : \mbf{C} \to \mbf{C}'$ be an elementary functor. Then $I(A)$ and $I(B)$ are complements inside $I(C)$.
+}
+
+\begin{proof}
+$A$ and $B$ satisfy that their pullback $A \cap B$ over $\mbf{C}$ is the empty sup $\emptyset$ of $\mbf{C}$. Since $I$ preserves pullbacks and finite sups, $I(A) \cap I(B) = I(A \cap B) = I(\emptyset) = \emptyset$. Similarly, $A \lor B = C$ and since $I$ preserves finite sups, $I(C) = I(A \lor B) = I(A) \lor I(B)$.
+\end{proof}
+
+Up until now, we have seen how the categorical features of a Boolean logical category correspond to the logical operations of a theory: finite limits correspond to meets and forming products of sorts, images (of projections) correspond to existential quantification, finite sups correspond to finite joins, and complementation corresponds to taking negations. So modulo an induction on complexity of formulas, elementary functors should correspond to interpretations.
+
+We will devote much of our energy in the rest of this section, and the following section, into making this intuition precise.
+
+\proposition{\label{prop-elementary-functors-induce-strict-interpretations}
+Let $T$ and $T'$ be $\mc{L}$ and $\mc{L}'$-theories. Let $F : \Def(T) \to \Def(T')$ be an elementary functor. Then $F$ induces a strict interpretation $I_F : T \to T'$.
+}
+
+\begin{proof}
+  Let $S$ be a basic sort in $\Def(T)$. We choose a representative formula of the equivalence class $F(S)$ and make that $I_F(S)$. After specifying the basic sorts, $I_F$ is determined on all sorts. Since $1$ is the limit of the empty diagram in $\Def(T)$ and elementary functors preserve finite limits, the empty sort $1$ of $T$ gets sent to the empty sort $1$ of $T'$. This satisfies part $1$ of the \hyperref[def-abstract-interpretation]{definition} of an abstract interpretation.
+
+  Let $c$ be a constant symbol of sort $S$. Then in $\Def(T)$, $c$ is interpreted as a nullary function $1 \overset{c}{\to} S$. Applying $F$, we get a nullary function $1 \to F(S)$. We now abuse notation and identify the formula $I_F(S)$ with the definable set in $\Def(T')$ it represents. Since $F$ preserves finite products, $I_F(S) \simeq F(S)$ and we define $I_F(c)$ to be the definable nullary function $1 \to F(S) \overset{\sim}{\to} I_F(S)$ of $T'$.
+
+  Let $R$ be a relation symbol of sort $S$. Then $F(R) \hookrightarrow F(S)$; composing by the isomorphism $F(S) \simeq I_F(S)$, we have that $F(R) \hookrightarrow I_F(S)$. We define $I_F(R)$ to be the image of this embedding.
+
+  Let $f$ be a function symbol whose graph relation $\Gamma(f)$ is of sort $S_1S_2$. Then we define $I_F(f)$ by defining $I_F(\Gamma(f))$ just as we did for a relation symbol.
+
+  We have now defined $I_F$ up to part $2$ of the \hyperref[def-abstract-interpretation]{definition} of an abstract interpretation. By an induction on complexity of formulas, $I_F$ determines a map of $\mc{L}$-sentences to $\mc{L}'$-sentences. We must now check that whenever $T \models \psi$, $T' \models I_F(\psi)$. We will show that at each step of the inductive definition of $I_F : \msf{Formulas}(\mc{L}) \to \msf{Formulas}{\mc{L}'}$, the truth of sentences is preserved.
+
+  $I_F$ preserves negations of formulas: given $\psi(x)$ and $\neg \psi(x)$ of sort $S$, we have that $I(\psi(x))$ and $I(\neg\psi(x))$ have empty intersection (since elementary functors preserves pullbacks and finite sups) and that $I(\psi(x))\lor I(\neg\psi(x)) = I(S)$ (since elementary functors preserve finite sups), so $I(\neg \psi(x)) \equiv \neg I(\psi(x))$. Since $F$ preserves finite sups and pullbacks, $I_F$ preserves disjunctions and conjunctions of formulas.
+
+  By viewing sentences as subobjects of the empty sort $1$, we see that $I_F$ preserves the truth of negations, conjunctions, and disjunctions of sentences.
+
+  $I_F$ preserves existential quantification of formulas: generally, $\exists x \varphi(x,y)$ is the image of the projection $\varphi(x,y) \overset{\pi_{S_y}}{\to} S_y$, and since $F$ preserves finite limits, it preserves images and projection maps from products, so $$I_F(\exists x \varphi(x,y)) \simeq F(\exists x \varphi(x,y)) \simeq \opn{im}\left(I(\varphi(x,y)) \overset{\pi_{F(S_Y))}}{\to} I(S_y)\right) \simeq \exists x F(\varphi(x,y)) \simeq \exists x I_F(\varphi(x,y)).$$
+
+  Note that this applies equally well when $y$ is an empty variable belonging to the empty sort $1$, and we are considering a sentence $\exists x \varphi(x)$. If $T \models \exists x \varphi(x)$, then in $\Def(T)$, $\exists x \varphi(x) = 1$. Since $F$ is elementary, it preserves terminal objects, so $F(\exists x \varphi(x)) = I_F(\exists x \varphi(x)) = 1$.
+
+    Now, let $\psi$ be an atomic $\mc{L}$-sentence. Then $\psi$ is of the form $R(t)$ or $t_1 =_S t_2$ for terms $t, t_1, t_2$. Since $\psi$ is atomic, these terms are definable constants of $T$, and so can be thought of as nullary definable functions $1 \overset{t}{\to} R(t)$ or $1 \overset{t_1}{\underset{t_2}{\rightrightarrows}} S$. Applying $F$, we see that $F(t)$ goes into $F(R)$ and $F(t_1) = F(t_2)$ (since $F$ is at least a function), so $I_F(t) \in I_F(R)$ and $I_F(t_1) = I_F(t_2)$. This provides the base of the induction and completes the proof.
+  \end{proof}
+
+  This has an obvious converse:
+
+  \proposition{
+    \label{prop-strict-abstract-interpretations-induce-elementary-functors}
+    Let $I : T \to T'$ be a strict abstract interpretation. Let $[\psi(x)]$ denote the $\sim$-equivalence class of $\psi$ (as in the \hyperref[def-def-t]{definition} of $\Def(T)$).
+
+    Let $X \overset{f}{\to} Y$ be a definable function in $T$. Then the assignment
+    $$
+X \overset{f}{\to} Y \mapsto [X] \overset{[f]}{\to} [Y]
+    $$ determines an elementary functor $F_I : \Def(T) \to \Def(T')$.
+  }
+  \begin{proof}
+    $F_I$ is well-defined on objects since $I$ is an interpretation, and so preserves the sentences which assert that any two given formulas are provably equivalent. $F_I$ is well-defined on morphisms since $I$ is a strict interpretation, so that for every definable function $f$ of $T$, $T'$ proves that $I(f)$ is a function.
+
+    Now we check that $F_I$ preserves finite products. We saw in \hyperref[def-t-has-finite-limits]{Proposition \ref*{def-t-has-finite-limits}} that any finite collection of formulas $\varphi_1(x_1), \dots, \varphi_n(x_n)$ has a canonical product $\varphi_1 \times \dots \times \varphi_n(x_1, \dots, x_n)$. Given any tuple $(a_i \in \psi_i(x))$, $T$ proves that there is a unique $\ol{a} \in \varphi_1 \times \dots \times \varphi_n(x_1, \dots, x_n)$ which projects to each $a_i$. Since $I$ was an interpretation, $T'$ proves the same thing about $I(\varphi_1 \times \varphi_n(x_1, \dots, x_n))$, so $I(\varphi_1 \times \varphi_n(x_1, \dots, x_n))$ satisfies the universal property of the product $I(\varphi_1(x_1)) \times \dots \times I(\varphi_n(x_n))$.
+
+    The same argument works for equalizers, so $F_I$ preserves finite limits.
+
+    We saw in \hyperref[def-t-has-finite-sups]{Proposition \ref*{def-t-has-finite-sups}} that finite sups in $\Def(T)$ are given by disjunctions of formulas. $I_T$ was defined by induction to send $\varphi(x) \lor \psi(x)$ to $I(\varphi(x)) \lor I(\psi(x))$, so $F_I$ preserves finite sups.
+
+    Similarly, $I_T$ was defined by induction to send an existentially quantified formula $\exists x \varphi(x,y)$ to $\exists x I(\varphi(x,y))$. So $F_I$ preserves images of the canonical projections between tuples of sorts. We saw in \hyperref[def-t-has-images]{Proposition \ref*{def-t-has-images}} that the image of a definable function $f$ in $\Def(T)$ is given by binding the domain variable of the graph relation $\Gamma(f)(x,y)$, so that $\im(f) = \exists x \Gamma(x,y)$. Therefore, $F_I$ preserves the images of definable functions.
+  \end{proof}
+
+  We have seen how strict interpretations between theories induce elementary functors between the categories of definable sets, and vice-versa. It is natural to ask if this implements a one-one correspondence, and if such a correspondence is functorial. Indeed, we will finish this section by showing that the constructions of \myref{Proposition}{prop-elementary-functors-induce-strict-interpretations} and \myref{Proposition}{prop-strict-abstract-interpretations-induce-elementary-functors} essentially implement a equivalence of categories between theories and Boolean logical categories.
+
+  \definition{\label{def-transformation-of-strict-abstract-interpretations}
+    Let $I, I' : T_1 \to T_2$ be strict abstract interpretations. A \tbf{transformation} $\eta : I \to T'$ comprises the following data:
+    \begin{enumerate}
+    \item For every sort $S$ of $T_1$, a definable function $\eta_S : I(S) \to I'(S)$ in $T_2$, such that
+    \item for every formula $\varphi(x)$ of sort $S$ in $T_1$, $\eta_S : I(S) \to I'(S)$ restricts to a definable function $\eta_{\varphi(x)} : I(\varphi(x)) \to I'(\varphi(x))$.
+    \end{enumerate}
+    }
+
+\definition{\label{def-mod-provable-equivalence} Let us say that two strict interpretations $I, I' : T_1 \to T_2$ are \tbf{provably equivalent} if for every formula $\varphi$ of $T_1$,
+    $$
+T_1 \entails I(\varphi) \leftrightarrow I'(\varphi).
+$$
+
+Similarly, we say that two transformations $I \overset{\eta}{\underset{\eta'}{\rightrightarrows}} I'$ are \tbf{provably equivalent} if for every sort $S$, the graph of $\eta_S$ is $T_2$-provably equivalent to the graph of $\eta'_S$.
+
+Let $[I]_{\sim}$ and $[I']_{\sim}$ be two equivalence classes of interpretations mod provable equivalence. We define a transformation $[I]_{\sim} \to [I']_{\sim}$ to be an equivalence class of transformations $I \to I'$ mod provable equivalence. It is easy to see that this does not depend on our choice of representatives $I, I'$ of the equivalence classes of interpretations.}
+
+\proposition{\label{prop-transformations-induce-natural-transformations}
+Let $I, I' : T_1 \to T_2$ be strict abstract interpretations, and let $\eta : I \to I'$ be a transformation. Then the construction $I \mapsto F_I$ from \myref{Proposition}{prop-strict-abstract-interpretations-induce-elementary-functors} determines from $\eta$ a natural transformation of elementary functors $\wt{\eta} : F_I \to F_{I'}$.
+}
+
+\begin{proof}
+  A natural transformation $F_{I} \to F_{I'}$ assigns to each object $A$ of $\Def(T_1)$ a definable function $F_I(A) \to F_{I'}(A)$ which is natural with respect to definable functions $A \to B$.
+
+  Our definition of natural transformation already gives us a collection of definable functions $\wt{\eta}_A : F_I(A) \to F_{I'}(A)$ (by taking the mod-$T_2$-provable equivalence classes of the definable functions $\eta_A$) and so it remains to verify that for every definable function $f : A \to B$, the following diagram commutes:
+
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+F_I(A) \arrow[swap]{d}{F_I(f)} \arrow{r}{\wt{\eta}_A} \& F_{I'}(A) \arrow{d}{F_{I'}(f)}  \\
+F_I(B) \arrow[swap]{r}{\wt{\eta}_B} \&  F_{I'}(B)
+  \end{tikzcd}
+  $$
+  \end{proof}
+
+  \definition{
+    \label{def-category-of-theories}
+    We define the \textbf{$2$-category of first-order theories}, written $\Th$, by
+    $$
+\Th \dfeq \begin{cases}
+\te{Objects: first-order theories}  \\
+\te{1-morphisms: strict interpretations mod provable equivalence}\\
+\te{2-morphisms: transformations.}
+      \end{cases}
+      $$
+    }
+
+  \definition{
+    \label{def-category-of-boolean-logical-categories}
+    We define the \textbf{$2$-category of Boolean logical categories}, written $\textbf{BoolLogCat}$, by
+    $$
+    \mbf{BoolLogCat} \dfeq \begin{cases}
+      \te{Objects: Boolean logical categories} \\
+      \te{1-morphisms: elementary functors} \\
+      \te{2-morphisms: natural transformations.}
+      \end{cases}
+    $$
+  }
+
+Our goal for the remainder of this section is to prove the following theorem.
+  
+  \theorem{\label{thm-theories-are-boolean-logical-categories}
+    The assignment
+$$
+\begin{tikzcd}[ampersand replacement = \&]
+  T_1 \arrow[dd, bend right, "I"{left}, ""{name=U, inner sep = 1pt}] \arrow[dd, bend left, "I'"{right}, ""{name=D, inner sep = 1pt}] \\
+  \\
+  T_2
+  \arrow[Rightarrow, from=U, to=D, "\eta"]
+\end{tikzcd}
+\hspace{3mm}
+\mapsto
+\hspace{3mm}
+\begin{tikzcd}[ampersand replacement = \&]
+  \Def(T_1) \arrow[dd, bend right, "F_I"{left}, ""{name=U, inner sep = 1pt}] \arrow[dd, bend left, "F_{I'}"{right}, ""{name=D, inner sep = 1pt}, left] \\
+  \\
+ \Def(T_2)
+  \arrow[Rightarrow, from=U, to=D, "\wt{\eta}"]
+\end{tikzcd}
+$$
+      determines an equivalence of $2$-categories $\Def(-) : \Th \overset{\sim}{\to} \mbf{BoolLogCat}.$
+    }    
+
+
+    
+    \lemma{\label{lemma-uno}
+      If $I, I' : T \to T'$ are different morphisms in $\Th$, then $F_I \neq F_I'$ as elementary functors.
+
+      Similarly, if $\eta_1, \eta_2 : I \to I'$ are different transformations, then $\wt{\eta}_1 \neq \wt{\eta}_2$ as natural transformations of elementary functors.
+}
+
+\begin{proof}
+  By definition $I$ and $I'$ are different morphisms in $\Th$ if and only if they are not provably equivalent. This means that there exists some formula $\varphi$ of $T$ such that $I(\varphi)$ are $I'(\varphi)$ do not represent the same equivalence class in $\Def(T')$, so $F_I(\varphi) \neq F_{I'}(\varphi)$.
+
+  Similarly, $\eta_1 \neq \eta_2$ in $\Th$ if for some sort $S$, the definable functions $\eta_1$ and $\eta_2$ are not provably equivalent. Then $(\wt{\eta}_1)_S \neq (\wt{\eta}_2)_S$, so $\wt{\eta}_1 \neq \wt{\eta}_2$.
+\end{proof}
+
+\lemma{\label{lemma-dos}
+  Let $F : \Def(T_1) \to \Def(T_2)$ be an elementary functor. Let $\wt{F}$ be the elementary functor induced by the interpretation $I_F$, as in \myref{Proposition}{prop-strict-abstract-interpretations-induce-elementary-functors}.
+
+  Then $F = \wt{F}$.
+}
+
+\begin{proof}
+  We use $[ - ]_{\sim}$ to denote an equivalence class modulo provable equivalence. Unwinding definitions, we see that for any formula $\varphi$ of $T_1$, we have
+  $$
+F\left([\varphi]_{\sim}\right) = \left[ I_F(\varphi)\right]_{\sim} = \wt{F}\left([\varphi]_{\sim}\right)
+  $$
+\end{proof}
+
+\lemma{\label{lemma-uno-and-a-half}
+  A natural transformation of elementary functors $\epsilon : F \to F'$, where $F, F' : \Def(T_1) \to \Def(T_2)$ determines a transformation (mod provable equivalence) of interpretations $\eta : I_F \to I_{F'}$, where $I_F, I_{F'} : T_1 \to T_2$.
+
+  Then $\wt{\eta} = \epsilon$.
+}
+
+\begin{proof}
+  For each sort $S \in \Def(T)$, put $\eta_S \dfeq [\epsilon_S]_{\sim}$. Since $I_F$ and $I_{F'}$ are obtained by choosing representatives from $\sim$-equivalence classes and $\epsilon_S$ was natural, $\eta_S$ is a definable function (mod provable equivalence) $I_F(S) \to I_{F'}(S)$ and for any formula $\varphi(x)$ of sort $S$ restricts to a definable function (mod provable equivalence) $I_F(\varphi(x)) \to I_{F'}(\varphi(x))$.
+
+  Then, as we did for \myref{Lemma}{lemma-dos}, we see that for an arbitrary formula $\varphi$,
+  $$
+\wt{\eta}_{[\varphi]_{\sim}} = \left[\eta_{\varphi}\right]_{\sim} = \epsilon_{[\varphi]_{\sim}}.
+  $$
+  \end{proof}
+
+The following definition is essentially due to Makkai and Reyes (see ``internal theories'' in \cite{makkai-reyes}).
+  
+\definition{
+  Let $\mbf{C}$ be a Boolean logical category. The \tbf{internal logic} of $\mbf{C}$ is a theory $T_{\mbf{C}}$ defined as follows:
+  \begin{enumerate}
+  \item We form a language $\mc{L}_{\mbf{C}}$ by associating to every object $A$ of $\mbf{C}$ a sort $\msf{L}(A)$, to every morphism $f : A \to B$ of $\mbf{C}$ a function symbol $\msf{L}(f)$ of sort $\msf{L}(A) \to \msf{L}(B)$, to every morphism from the terminal object $1 \overset{c}{\to} A$ a constant symbol $\msf{L}(c)$ of sort $\msf{L}(A)$, and to every subobject $B \hookrightarrow A$ a relation symbol $\msf{L}_A(B)$ of sort $\msf{L}(A)$.
+  \item We form a theory $T_{\mbf{C}}$ whose sentences specify the Boolean logical category structure on $\mbf{C}$. That is,
+    \begin{enumerate}
+    \item For every identity morphism $\id_A : A \to A$,
+      $$
+T_{\mbf{C}} \entails (\forall x)\left(\msf{L}(\id_A)(x) = x\right).
+      $$
+    \item If $g_1 \circ g_2 = h$ in $\mbf{C}$, then $$T_{\mbf{C}} \entails (\forall x)\left(\msf{L}(g_1) ( \msf{L}(g_2) (x)) = \msf{L}(h)(x)\right).$$
+    \item If $\begin{tikzcd}[ampersand replacement = \&]
+        \& A\\
+A \times B \arrow{ur}{\pi_A} \arrow[swap]{dr}{\pi_B}        \& \\
+        \& B
+      \end{tikzcd}$
+      is a product diagram in $\mbf{C}$, then
+      $$
+T_{\mbf{C}} \entails \left(\forall a \in \msf{L}(A) \right) \left(\forall b \in \msf{L}(B) \right) \left(\exists! c \in \msf{L}(A \times B) \right) \bigl[\msf{L}(\pi_A)(c) = a \hspace{2mm} \land \hspace{2mm} \msf{L}(\pi_B)(c) = b \bigr]
+$$
+(c.f. \myref{Proposition}{def-t-has-finite-limits}).
+
+\item If $C \overset{u}{\to} A \overset{f}{\underset{g}{\rightrightarrows}} B$ is an equalizer diagram in $\mbf{C}$, then
+  $$
+T_{\mbf{C}} \entails \left(\forall a \in \msf{L}(A) \right) \left(\exists! c \in \msf{L}(C)\right) \bigl[\msf{L}(f)(a) = \msf{L}(g)(a) \leftrightarrow \msf{L}(u)(c) = a\bigr].
+$$
+\item If $B_1 \lor B_2$ is the finite sup of $B_1$ and $B_2$ in the subobject lattice of $A$ in $\mbf{C}$, then
+  $$
+T_{\mbf{C}} \entails \left(\forall a \in \msf{L}(A)\right) \bigl[\msf{L}_A(B_1 \lor B_2)(a) \leftrightarrow \msf{L}_A(B_1)(a) \lor \msf{L}_A(B_2)(a)\bigr].
+$$
+\item If $C \overset{f}{\to} A$ is a morphism in $\mbf{C}$ with image $B = \im(f) \hookrightarrow A$, then
+  $$
+T_{\mbf{C}} \entails \left(\forall a \in \msf{L}(A) \right) \bigl[ \left(\exists c \in \msf{L}(C)\right)\left(\msf{L}(f)(c) = a \right) \leftrightarrow \msf{L}_A(B)(a)\bigr].
+$$
+\item If $1_{\mbf{C}}$ is the terminal object of $\mbf{C}$, then
+  $$
+T_{\mbf{C}} \entails (\exists! a \in \msf{L}(1_{\mbf{C}})) \bigl[a = a\bigr].
+$$
+\item If $\emptyset_{\mbf{C}}$ is the empty sup in the subobject lattice of an object $A$, then
+  $$
+T_{\mbf{C}} \entails (\forall a \in \msf{L}(A)) \bigl[\neg \msf{L}(\emptyset_{\mbf{C}})(a)\bigr].
+  $$
+      \end{enumerate}
+  \end{enumerate}
+}
+
+  The above data clearly equip $\mbf{C}$ with a canonical functor $\msf{L} : \mbf{C} \to \Def(T_{\mbf{C}})$, by identifying each object of $\mbf{C}$ with its corresponding sort in $\mc{L}_{\mbf{C}}$, and by identifying each morphism of $\mbf{C}$ with its corresponding function symbol in $\mc{L}_{\mbf{C}}$.
+
+  \theorem{\label{thm-tres}
+   The canonical functor $\msf{L} : \mbf{C} \to \Def(T_{\mbf{C}})$ is an equivalence of categories.
+  }
+
+  \begin{proof}
+    We will show that the functor is essentially surjective by inducting on the complexity of formulas in $T_{\mbf{C}}$ and showing that at every step of the induction, we can find a corresponding object of $\mbf{C}$ gotten by carrying out the construction of the formula ``internally'' in $\mbf{C}$.
+
+    The base of the induction is almost completely provided by the definition of $T_{\mbf{C}}$. We remark that, given a comparison of two terms $t_1 = t_2$, we can treat constants as nullary functions and reduce to the case where $t_1$ is some composition of function symbols $\msf{L}(\ol{f})$ applied to some tuple of variables $\ol{x}$ and where $t_2$ is some composition of function symbols $\msf{L}(\ol{g})$ applied to some tuple of variables $\ol{y}$. Letting $S$ denote the sort of the equality relation we're using to compare $t_1$ and $t_2$, we have that $$\msf{L}(\ol{f})(\ol{x}) = \msf{L}(\ol{g})(\ol{y}) \simeq \msf{L}(S_x \times_S S_y)$$ (where $S_x \times_S S_y$ is the pullback computed in $\mbf{C}$ of $S_y$ and $S_y$ over $S$ with respect to the morphisms $\ol{f}$ and $\ol{g}$.)
+
+    This is because by viewing a pullback as a composition of products and equalizers, our axiomatization of $T_{\mbf{C}}$ gives that $\msf{L}(S_x \times_S S_y)$ injects into $\msf{L}(S_x \times S_y)$ with image $\msf{L}_A(S_x \times_S S_y)$, and
+    $$
+T_{\mbf{C}} \entails (\forall a \in \msf{L}(S_x)) (\forall b \in \msf{L}(S_y)) (\exists! c \in \msf{L}_A(S_x \times_S S_y)) \bigl[\msf{L}(\ol{f})(a) = \msf{L}(\ol{g})(b)\leftrightarrow \msf{L}(\pi_{S_x})(c) = a \land \msf{L}(\pi_{S_y})(c) = b \bigr],
+$$
+which defines a bijection $\epsilon^{-1}$ from $\msf{L}(\ol{f})(\ol{x}) =\msf{L}(\ol{g})(\ol{y})$ to $\msf{L}_A(S_x \times_S S_y)$, so that
+$$
+T_{\mbf{C}} \entails \bigl(\msf{L}(\ol{f})(\ol{x}) = \msf{L}(\ol{g})(\ol{y})\bigr) \leftrightarrow \bigl(\msf{L}_A(S_x \times_S S_y)(\epsilon^{-1}(x,y))\bigr).
+$$
+
+Note that above, we are in the following situation. There is a canonical bijection $\wh{\epsilon} : \msf{L}(S_x \times S_y) \to \msf{L}(S_x) \times \msf{L}(S_y)$, given by sending a $c$ to the pair of projections $\bigl(\msf{L}(\pi_{S_x})(c), \msf{L}(\pi_{S_y})(c)\bigr)$, and it restricts along the inclusion $\msf{L}(S_x \times_S S_y) \hookrightarrow \msf{L}(S_x \times S_y)$ to the bijection $\epsilon : L(S_x \times_S S_y) \overset{\sim}{\to} \msf{L}(\ol{f})(\ol{x}) = \msf{L}(\ol{g})(\ol{y})$. That is, the following diagram, with the horizontal arrows bijections, commutes:
+$$
+\begin{tikzcd}[ampersand replacement = \&]
+\msf{L}(S_x) \times \msf{L}(S_y) \arrow{r}{\wh{\epsilon^{-1}}}  \& \msf{L}(S_x \times S_y)  \\
+ \arrow[hook]{u} \msf{L}(\ol{f})(\ol{x}) = \msf{L}(\ol{g})(\ol{y})   \& \msf{L}(S_x \times_S S_y) \arrow{l}{\epsilon} \arrow[hook]{u}.
+\end{tikzcd}
+$$
+
+So the definable bijection $\epsilon$ is not just any definable bijection. It has the additional property that a diagram like the one above commutes, where in particular the right vertical arrow is $\msf{L}$ of an embedding in $\mbf{C}$. It is clear that for atomic formulas, the definable bijections witnessing the base of the induction all satisfy this additional property.
+
+We proceed with the induction. Let us say that an $\mc{L}_{\mbf{C}}$-formula $\varphi(x)$, viewed as an object of $\Def(T_{\mbf{C}})$, has a \emph{counterpart} if there exists an object $A_{\varphi(x)}$ of $\mbf{C}$ such that there is a definable bijection $\msf{L}(A_{\varphi(x)}) \overset{\epsilon_{\varphi(x)}}{\simeq} \varphi(x)$ in $\Def(T_{\mbf{C}})$, which satisfies the additional property we discussed above. If every $\mc{L}_{\mbf{C}}$-formula $\varphi(x)$ has a counterpart, then $\msf{L}$ is essentially surjective.
+
+If we know that the $\mc{L}_{\mbf{C}}$-formulas $\varphi(x)$ and $\psi(x)$ of sort $S \simeq \msf{L}(C)$ have counterparts $A_{\varphi(x)}$ and $A_{\psi(x)}$, then we can form their join
+$$T_{\mbf{C}} \entails \varphi(x) \lor \psi(x) \leftrightarrow \bigl(\msf{L}(A_{\varphi(x)})(\epsilon_{\varphi(x)}(x)) \lor \msf{L}(A_{\psi(x)})(\epsilon_{\psi(x)})(x)\bigr),$$
+and we put $$\epsilon_{\varphi(x) \lor \psi(x)} \dfeq \begin{cases} \epsilon_{\varphi(x)} \te{ if $x \in \varphi(x)$}\\
+  \epsilon_{\psi(x)} \te{ if $x \in \psi(x) \backslash \varphi(x)$}
+  \end{cases},$$
+  so that $\varphi(x) \lor \psi(x)$ has counterpart $A_{\varphi(x)} \lor A_{\psi(x)}$ (finite sup computed in the subobject lattice of $C$), witnessed by the definable bijection $\epsilon_{\varphi(x) \lor \psi(x)}$. We can argue analogously that $\varphi(x) \land \psi(x)$ has a counterpart.
+
+  Now suppose that $\varphi(x)$ of sort $S \overset{\wh{\epsilon}}{\longleftarrow} \mc{L}(C)$ has a counterpart $A_{\varphi(x)}$. Then $\neg \varphi(x)$ has counterpart $\neg A_{\varphi(x)}$, with definable bijection $\epsilon_{\neg \varphi(x)}$ defined to be the restriction of the canonical bijection $\wh{\epsilon}$ to the complement of $\msf{L}(A_{\varphi(x)}) \hookrightarrow \msf{L}(C)$.
+
+  Suppose that $\varphi(x,y)$ of sort $S_x \times S_y \overset{\wh{\epsilon}}{\longleftarrow} \msf{L}(C_x \times C_y)$ has a counterpart. It is easy to check that the canonical bijections (where we have abused notation by so far calling all of them $\wh{\epsilon}$) are compatible with projections, so that the diagram
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+   \msf{L}(C_x) \arrow{d} \&  \msf{L}(C_x \times C_y) \arrow{d}\arrow{l} \arrow{r} \& \msf{L}(C_y) \arrow{d} \\
+ S_x    \& S_x \times S_y \arrow{l} \arrow{r} \& S_y,
+  \end{tikzcd}
+  $$
+  commutes, where the top horizontal maps are $\msf{L}$ of the projections $C_x \times C_y \rightrightarrows C_x, C_y$, the bottom horizontal maps are the projections $S_x \times S_y \rightrightarrows S_x, S_y$, and the vertical maps are the $\wh{\epsilon}$.
+
+  Let $\iota$ be the inclusion of $A_{\varphi(x,y)}$ into $C_x \times C_y$. Then $\exists x \varphi(x,y)$ will have counterpart $A_{\exists x \varphi(x,y)} \dfeq \im \bigl( \pi_{C_y} \circ \iota \bigr) \hookrightarrow C_y$, with $\epsilon_{\varphi(x,y)}$ the unique map which makes the following diagram commute:
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+ \varphi(x,y) \arrow[two heads]{r}   \& \exists x \varphi(x,y) \\
+\msf{L}(A_{\varphi(x,y)}) \arrow{u}{\simeq} \arrow[two heads]{r}    \& \msf{L}(\im(\pi \circ \iota)) \arrow[dashed]{u}.
+  \end{tikzcd}
+  $$
+  This completes the induction on complexity of formulas, and we conclude that $\msf{L}$ is essentially surjective.
+
+  Fullness does not immediately follow from essential surjectivity. Instead, we must look closer at the proof and use the additional property which allowed us to conclude that every $\mc{L}_{\mbf{C}}$-formula had a counterpart.
+
+  Indeed, let $f : \msf{L}(A) \to \msf{L}(B)$ be a definable function in $\Def(T_{\mbf{C}})$. Then there is a subobject $G$ of $A \times B$ such that the following diagram commutes:
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+  \msf{L}(G) \arrow{r} \arrow[swap]{d}{\simeq}  \& \msf{L}(A \times B) \arrow{d}{\simeq} \\
+\Gamma(f) \arrow{r}    \& \msf{L}(A) \times \msf{L}(B).
+\end{tikzcd}
+$$
+    Since $\Gamma(f)$ was a definable function, the canonical projection $\msf{L}(A) \times \msf{L}(B) \to \msf{L}(A)$ restricts to a bijection $\Gamma(f) \simeq \msf{L}(A)$. Then $\msf{L}$ of the canonical projection $A \times B \to A$ restricted to $G$ must be a definable bijection.
+
+    It now remains to show that this implies that the canonical map $G \to A$ is an isomorphism, since then $G$ will be the graph of the morphism $A \overset{\sim}{\to} G \to B$.
+
+    From how we defined $T_{\mbf{C}}$, $\msf{L}$ preserves diagonal embeddings $A \to A \times A$. If $K$ is the kernel pair $K \rightrightarrows A \overset{f}{\to} B$ of a morphism $f$ in $\mbf{C}$, then the diagram
+    $$
+    \begin{tikzcd}[ampersand replacement = \&]
+     \msf{L}(A \times A) \arrow{r} \& \msf{L}(A) \times \msf{L}(A) \arrow[shift left = 0.50ex]{r} \arrow[shift right = 0.50ex]{r} \& \msf{L}(A) \arrow{r}{\msf{L}(f)} \& \msf{L}(B)\\
+\msf{L}(K) \arrow{u}  \arrow{r}     \& \ker(\msf{L}(f))  \arrow{u} \& \&
+    \end{tikzcd}
+    $$
+    commutes. If $\msf{L}(f)$ is injective, then $\ker(\msf{L}(f))$ is the diagonal relation on $\msf{L}(A)$ and hence $\msf{L}(K)$ is the diagonal relation on $\msf{L}(A)$.
+
+    Similarly, if $\msf{L}(f)$ is surjective, then its image is all of $\msf{L}(B)$.
+
+    It therefore suffices to show that, for subobjects $A, B \hookrightarrow C$ of $C$,  whenever $T_{\mbf{C}} \entails \msf{L}_C(A) \rightarrow \msf{L}_C(B)$ as predicates on $\msf{L}(C)$, $A \subseteq B$ as subobjects of $C$ in $\mbf{C}$.
+
+    By the categorical completeness theorem and the discussion of internal theories in \cite{makkai-reyes}, we know that:
+    \begin{enumerate}
+    \item Whenever the inclusion of $A$ into $C$ does not factor through the inclusion of $B$ into $C$ in $\mbf{C}$\footnote{Warning: this is \emph{not} the same as saying that the terminal map from the complement $B \backslash A$ to $1_{\mbf{C}}$ has image $= 1_{\mbf{C}}$. This would mean that the internal theory of $\mbf{C}$ \emph{proves} that $B \backslash A$ is nonempty; however, if $\mbf{C}$ merely does not contain a factorization of $A \hookrightarrow C$ through $B \hookrightarrow C$, then the internal theory leaves the proposition $\msf{L}(A) \rightarrow \msf{L}(B)$ undecided.}, there exists an elementary functor $F : \mbf{C} \to \Set$ such that $F(B) \backslash F(A) \neq \emptyset$, and
+    \item every elementary functor $F : \mbf{C} \to \Set$ can be expanded to a model of $M_F$ of $T_{\mbf{C}}$.
+\end{enumerate}
+Therefore, if $\mbf{C}$ does not know that $A \subseteq B$ as subobjects of $C$ in $\mbf{C}$, there is a model $M_F$ of $T_{\mbf{C}}$ such that $M_F(B) \backslash M_F(A) \neq \emptyset$. Therefore, $T \not \entails \msf{L}(A) \rightarrow \msf{L}(B)$.
+
+This shows that $\msf{L}$ is full. This also shows that $\msf{L}$ is faithful: if $f_1 \neq f_2$ in $\mbf{C}$, then $T \not \entails \msf{L}(\Gamma(f_1)) \leftrightarrow \msf{L}(\Gamma(f_2))$.
+      \end{proof}
+  
+  \begin{proof}[Proof of Theorem \ref{thm-theories-are-boolean-logical-categories}.]
+    \hyperref[lemma-uno]{Lemma \ref*{lemma-uno}} shows that $\Def(-)$ is faithful on $1$-morphisms and $2$-morphisms, \hyperref[lemma-dos]{Lemma \ref*{lemma-dos}} and \myref{Lemma}{lemma-uno-and-a-half} shows that $\Def(-)$ is full on $1$-morphisms and $2$-morphisms, and \myref{Theorem}{thm-tres} shows that $\Def(-)$ is surjective up to equivalence.
+  \end{proof}
+\section{Pretoposes and the $(-)^{\eq}$-construction}
+Previously, we established an equivalence
+$$
+\begin{tikzcd}[ampersand replacement = \&]
+ \bigl\{\te{first-order theories and strict interpretations}\bigr\} \arrow{d}\\
+ \bigl\{\te{Boolean logical categories and elementary functors}\bigr\}. \arrow{u}
+\end{tikzcd}
+$$
+We would like to expand this picture to incorporate arbitrary interpretations of theories. As we saw during the proof of \myref{Proposition}{prop-strict-abstract-interpretations-induce-elementary-functors}, we needed to assume strictness of the interpretation $I : T \to T'$ to ensure that the graph $\Gamma(f)$ of a definable function $f$ in $T$ is interpreted as a relation $I(\Gamma(f))$ which $T'$ proves to be the graph of a function. Without the strictness assumption, equality is interpreted as a proper equivalence relation $E$, and then the definition of an abstract interpretation only ensures that $I(f)$ is a function only \emph{on $E$-equivalence classes}, i.e. only after quotienting out by $E$.
+
+Therefore, if we can always form quotients of definable sets by definable equivalence relations, then we can canonically associate to any non-strict interpretation a ``homotopic'' strict interpretation, by quotienting the non-equality equivalence relations back into equality relations.
+
+First-order theories don't always have definable quotients of definable sets by definable equivalence relations, and Boolean logical categories don't always have quotients of objects by equivalence-relation-objects. However, we can canonically enlarge any theory $T$ (and so, by Theorem \ref{thm-theories-are-boolean-logical-categories}, any Boolean logical category $\mbf{C}$) to a theory $T^{\eq}$ (resp., to a Boolean logical category $\wt{\mbf{C}}$) which \emph{does} have definable quotients of definable sets by definable equivalence relations (resp. \emph{does} have quotients of objects by equivalence-relation-objects). Then arbitrary abstract interpretations $T_1 \to T_2$ will correspond to strict abstract interpretations $T_1 \to T_2^{\eq}$.
+
+Our goal in this section will be to make everything we have just said precise, and to characterize those logical categories of the form $\wt{C} = \Def(T^{\eq})$.
+
+\definition{
+  \label{def-internal-congruence}
+  An \tbf{equivalence relation} (or \tbf{internal congruence}) in a category $\mbf{C}$ with finite limits is the following data:
+  \begin{enumerate}
+  \item An object $X$ and a subobject $E \hookrightarrow X \times X$,
+  \item A \emph{reflexivity map} $r : X \to E$ such that $r$ is a section to both projections $\pi_1, \pi_2 : X \times X \to X$,
+  \item A \emph{symmetry map} $s : E \to E$ such that $\pi_1 \circ s = \pi_2$ and $\pi_2 \circ s = \pi_1$,
+  \item A \emph{transitivity map} $r : E \times_X E \to E$, where $E \times_X E$ is the pullback of $\pi_1$ and $\pi_2$, as in the following pullback square (where $i : R \hookrightarrow X \times X$ is the inclusion map):
+    $$
+    \begin{tikzcd}[ampersand replacement = \&]
+E \times_X E \arrow{r}{p_2} \arrow[swap]{d}{p_1}       \& R \arrow{d}{\pi_1 \circ i} \\
+R \arrow{r}{\pi_2 \circ i}      \& X
+      \end{tikzcd}
+      $$
+such that $\pi_1 \circ i \circ p_2 = \pi_1 \circ i \circ t$, and $\pi_2 \circ i \circ p_2 = \pi_2 \circ i \circ t$.
+    \end{enumerate}
+  }
+
+  \example{\label{example-kernel-pair}
+    Let $f : X \to Y$ be a morphism in $\Def(T)$. The pullback $X \times_Y X$ with respect to $f$ and $f$, as in
+    $$
+    \begin{tikzcd}[ampersand replacement = \&]
+X  \arrow{r}{f}     \& Y\\
+X \times_Y X \arrow{u}{\pi_1} \arrow[swap]{r}{\pi_2}   \& X \arrow[swap]{u}{f},
+    \end{tikzcd}
+    $$
+    can be canonically viewed as an internal congruence $X \times_Y X \overset{\pi_1}{\underset{\pi_2}{\rightrightarrows}} X$, called the \tbf{kernel} or \tbf{kernel pair} of $f$. We write $\ker(f) \dfeq X \times_Y X$.
+    }
+
+  \definition{
+Let $E \rightrightarrows X$ be an equivalence relation in $\mbf{C}$. A \tbf{quotient} of $E$, written $X/E$, is the coequalizer of $E \rightrightarrows X$.
+    }
+
+\definition{
+  \label{def-pretopos} A \tbf{pretopos} is a Boolean logical category $\mbf{C}$ that additionally satisfies:
+  \begin{enumerate}
+\item $\mbf{C}$ has a stable disjoint sum of any pair of objects. A disjoint sum $A \sqcup B$ of objects $A, B$ is a coproduct of $A$ and $B$ such that, for the canonical maps $i : A \hookrightarrow A \sqcup B$ and $j : B \hookrightarrow A \sqcup B$, $i$ and $j$ are monomorphisms and the pullback $A \times_{A \sqcup B} B$ is isomorphic to $0$.
+
+Stability for disjoint sums means that whenever we have a diagram of the form
+$$ \begin{tikzcd}[ampersand replacement = \&]
+  \& A \arrow{r}{i} \& A \sqcup B \\
+  A' \arrow{ur} \arrow{r} \& C' \arrow{ur} \& B \arrow[swap]{u}{j} \\
+  \& B' \arrow{u} \arrow{ur} \&
+\end{tikzcd}$$
+with $A'$ and $B'$ pullbacks, then $C'$ is the disjoint sum of $A'$ and $B'$.
+
+\item \label{pretopos-EI} $\mbf{C}$ has quotients of equivalence relations. Equivalently, every equivalence relation in $\mbf{C}$ is the kernel pair of some map.
+  \end{enumerate}
+}
+
+The condition for theories analogous to condition \ref{pretopos-EI} above is \emph{elimination of imaginaries}.
+
+\definition{
+  \label{def-EI}
+  A theory $T$ \tbf{eliminates imaginaries} if for every definable equivalence relation $E \rightrightarrows X$, there exists a definable set $X/E$ and a definable function $\pi_E$ such that $E \rightrightarrows X$ is the kernel of $X \overset{\pi_E}{\to} X/E.$
+}
+
+\definition{
+  \label{def-T-eq}
+  The following construction, due to Shelah, associates to any theory $T$ a larger theory $T^{\eq}$ and a strict interpretation $T \to T^{\eq}$, such that $T^{\eq}$ eliminates imaginaries.
+
+  \begin{enumerate}
+  \item First, we expand the language $\mc{L}$ of $T$ to a language $\mc{L}^{\eq}$ by adding, for every definable equivalence relation $E \rightrightarrows X$, a new sort $S_E$ and a new partial function symbol $f_E : X \to S_E$.
+  \item $T^{\eq}$ is axiomatized by the theory of $T$ on the original sorts, plus sentences which assert that for every definable equivalence relation $E \rightrightarrows X$ in $T$, $f_E : X \to S_E$ is a surjection and $E = \ker(f_E)$.
+  \end{enumerate}
+
+  The new sorts $S_E$ are called \tbf{imaginary sorts}, and their elements are called \tbf{imaginaries}. The original sorts are called \tbf{real sorts}. There is a canonical strict interpretation $T \to T^{\eq}$ which is determined by the inclusion of languages $\mc{L} \subseteq \mc{L}^{\eq}$.
+
+  The empty sort $1$ has itself as a unique quotient, so we view it as both a real and imaginary sort.
+}
+
+The construction suggests that $T$ determines $T^{\eq}$. We can make this precise.
+
+%   Indeed, let $\psi(\ol{x})$ be a quantifier-free formula of sort $\vec{R} \times \vec{S}$, where $\vec{R}$ is a tuple of basic real sorts and $\vec{S}$ is a tuple of imaginary sorts which contains $S_E$. Putting $\psi(\ol{x})$ into disjunctive normal form, we write $\psi(\ol{x}) = \bigvee_{i \leq n} \theta_i(\ol{x})$, where each $\theta_i$ is a conjunction of atomic and negated-atomic $\mc{L}^{\eq}$-formulas of sort $\vec{R} \times \vec{S}$. Let $\ol{x}'$ denote the tuple of variables $\ol{x}$ with one variable, say $z$, of sort $S_E$ deleted.
+
+%   By an induction on the number of quantifiers, it suffices to see that for any $x \in \ol{x}'$, there exists $\mc{L}$-formulas $\varphi_0(\ol{x}), \dots, \varphi_n(\ol{x})$ such that $\exists x \theta(\ol{x})$ is equivalent to $\varphi_0(\ol{x}) \times f_{S_1}(\varphi_1(\ol{x})) \times \dots \times f_{S_n}(\varphi_n(\ol{x})).$
+
+  
+% It suffices to show that for each $i$, $\exists \ol{x}' \theta_i(\ol{x})$ is equivalent to $$\varphi(z) \overset{\opn{df}}{\equiv} \exists x (x \in Y \hspace{1mm} \land \hspace{1mm} f_E(x) = z.$$
+
+%   Depending on the variables which appear, an atomic or negated-atomic formula is either purely real (the only variables that appear are from $\vec{R}$), purely imaginary (the only variables which appear are from $\vec{S}$), or mixed. Rearranging the conjunction, we therefore write each $\theta_i(\ol{x})$ as a conjunction
+%   $$
+% \theta_i(\ol{x}) \equiv \theta^R_i(\ol{x}) \land \theta^M_i(\ol{x}) \land \theta^I_i(\ol{x}),
+% $$
+% where the superscripts denote purely real, mixed, or imaginary. $\theta^R_i(\ol{x})$ is equivalent to a quantifier-free $\mc{L}$-formula, $\theta^M_i(\ol{x})$ just asserts membership or non-membership in the graphs of the function symbols $f_S$ added for the imaginary sorts $\vec{S}$, and $\theta^I_i(\ol{x})$ consists of boolean combinations of the equality relations from each of the imaginary sorts.
+
+% Consider $\exists \ol{x}' \theta_i(\ol{x}) = \theta^R_i(\ol{x}) \land \theta^M_i(\ol{x}) \land \theta^I_i(\ol{x}).$ Each atomic or negated-atomic formula in $\theta^I(\ol{x})$ is always decidable as true or false, so without loss of generality we can ignore $\theta^I_i(\ol{x})$. Let $f_S : X_S \to S$ be one of the function symbols associated to an $S \in \vec{S}$. Then $\exists x \exists y \Gamma(f_S)(x,y)$ (resp. $\neg \Gamma(f_S)$) is equivalent to 
+
+\proposition{\label{prop-T-determines-T-eq}
+Any product $S_{E} \times S_{E'}$ of imaginary sorts is canonically isomorphic to a single imaginary sort $S_{E''}$, and any definable set in $T^{\eq}$ is canonically isomorphic to the quotient of a definable set of $T$.
+}
+
+\begin{proof}
+  Let $E \rightrightarrows X$ and $E' \rightrightarrows X'$ be two definable equivalence relations on definable sets $X$ and $X'$. There is a canonical surjective map
+  $$
+X \times X' \to X/E \times X'/E', \hspace{3mm} \te{ by } \hspace{1.5mm} (x, x') \mapsto (x/E, x'/E)
+  $$
+  with kernel relation $E'' \rightrightarrows X \times X' \twoheadrightarrow X/E \times X'/E'$. Therefore, there is a canonical definable bijection $S_E \times S_{E'} \simeq S_{E''}$. Note that this implies that in $T^{\eq}$, definable subsets of $S_E \times S_{E'}$ correspond precisely to definable subsets of $S_{E''}$.
+
+Now, let $S_E = S_{E_1}$ be an imaginary sort. We write $\ol{x} = x_1, \dots, x_n, y_1, \dots, y_m$, where $x_1, \dots, x_n$ are the real-sorted variables and $y_1, \dots, y_m$ are the imaginary-sorted variables belonging to the imaginary sorts $S_{E_1}, \dots, S_{E_m}$, where each $E_i$ is an equivalence relation on a definable set $X_i$ of sort $B_i$.  Let $\psi(\ol{x})$ be a quantifier-free definable set in $T^{\eq}$. Putting $\psi(\ol{x})$ into disjunctive normal form, we reduce to the case where $\psi(\ol{x})$ is a conjunction of atomic and negated-atomic $\mc{L}^{\eq}$-formulas. We will proceed in two steps. First, we will show that if we put quantifiers over all the real-sorted variables of $\psi(\ol{x})$, the imaginary-sorted result is canonically isomorphic to a product of images of $T$-definable sets. Second, we will show that given an imaginary-sorted product of images of $T$-definable sets, putting quantifiers over any of the imaginary-sorted variables still results in an imaginary-sorted product of images of $T$-definable sets. Quantifying over all the variables except $x_1$, we will get that each disjunctand of the disjunctive normal form of $\exists \ol{x} \backslash x_1 \psi(\ol{x})$ is the image of a $T$-definable set, and so their union will be the image of a $T$-definable set.
+
+So, assuming that $\psi(\ol{x})$ is a conjunction of atomic and negated-atomic $\mc{L}^{\eq}$-formulas, we rearrange the conjunctands according to which kinds of variables appear: purely real, mixed, and pure imaginary, so that
+$$
+\psi(\ol{x}) \equiv \left(\bigwedge_i \theta_i^R(\ol{x})\right) \land \left(\bigwedge_j \theta_j^M(\ol{x})\right) \land \left(\bigwedge_k \theta_k^I(\ol{x})\right).
+$$
+The only purely imaginary-sorted atomic $\mc{L}^{\eq}$-formulas are just the equality relations on each sort $S_{E_i}$. Some of the $E_i$ might coincide. Fix an $E_i$; then, the pure-imaginary part of $\psi(x)$ asserts some equalities and inequalities among the $n'$ distinct variables belonging to some $S_{E_i}$. Replacing ``$=_{S_{E_i}}$'' and ``$\neq_{S_{E_i}}$'' by $E_i$ and $\neg E_I$ throughout, obtain a definable subset of $X_i^{n'}$ whose image under $f_{E_i}$ is the conjunction of those $S_{E_i}$-sorted conjunctands of $\bigwedge_k \theta^I_k(\ol{x})$. Repeating this for each distinct equivalence relation among the $E_1, \dots, E_n$, we write $\bigwedge_k \theta^I_k(\ol{x})$ as a product of images of $T$-definable sets.
+
+To finish the first step, it remains to see what happens to the purely-real and mixed parts of $\psi(\ol{x})$ when we quantify over all the real variables. The purely-real part just becomes an $\mc{L}$-sentence. The mixed part consists of the graph relations $\Gamma_i(f)(x,y)$ of the projections $f_{E_i} : X_i \to S_{E_i}$ (and their negations). So there are four cases, depending on whether the real variable $x$ is existentially or universally quantified over, and whether or not $\Gamma_i$ is negated. It is easy to see that for all the cases except for the case where $x$ is existentially quantified over and $\Gamma_i$ is positive (so that we have an image), the resulting formula $Qx (\neg)\Gamma(f)(x,y)$ is equivalent mod $T^{\eq}$ to a purely-real sentence about $E_i$ and $X_i$. If the real variable $x$ does not appear in the pure real part, then $\exists x \Gamma_i(x,y)$ is equivalent mod $T^{\eq}$ to $S_{E_i}$.
+
+Summarizing, we have that $$\exists x_1 \dots \exists x_n \left(\bigwedge_i \theta^R_i(\ol{x})\right) \land \left( \bigwedge_j \theta^M_j(\ol{x}) \right)$$ is canonically isomorphic to a product of images of $T$-definable sets. Since the purely-imaginary part contains no real variables to quantify over and each $S_{E_i}$ is the image of $X_i$ under $f_{E_i}$, $\exists x_1 \dots \exists x_n \psi(\ol{x})$ is canonically isomorphic to a product of images of $T$-definable sets. This completes the first step.
+
+If $\psi(\ol{y}) \equiv (y_1 \in f_{E_1}(Y_1)) \land \dots \land (y_n \in f_{E_n}(Y_n))$ is an imaginary-sorted product of images of $T$-definable sets, then existentially quantifying over any $y_k$ has the same effect as deleting $(y_k \in f_{E_k}(Y_k))$, so the result is still a product of images of $T$-definable sets. Similarly, universally quantifying over any $y_k$ has no effect on the conjunctands $(y_i \in f_{E_i}(Y_i))$ when $i \neq k$, and $\forall y_k \exists x \left[ (x \in Y_k) \land f_{E_k}(x) = y_k \right]$ is equivalent mod $T^{\eq}$ to the assertion in $T$ that $Y_k$ is equal to $X_k$, the domain of the equivalence relation $E_k$. Therefore, when we universally quantify over $y_k$, the conjunctand $(y_k \in f_{E_k}(Y_k))$ can be replaced by this sentence in $T$, which is a subterminal object of $1$ whose image is itself. So both $\exists y_k \psi(\ol{y})$ and $\forall y_k \psi(\ol{y})$ are canonically isomorphic to products of images of $T$-definable sets.
+\end{proof}
+
+\proposition{\label{def-t-eq-is-a-pretopos}
+For any theory $T$, $\Def(T^{\eq})$ is a pretopos.
+}
+
+\begin{proof}
+  $\Def(T^{\eq})$ is already a Boolean logical category, so it remains to check the existence of quotients and stable disjoint sums.
+  \begin{description}
+  \item[Quotients: ] If $E \rightrightarrows X$ is a definable equivalence relation of $T^{\eq}$, then by Proposition \ref{prop-T-determines-T-eq}, the diagram $E \rightrightarrows X$ is the image of an $T$-definable equivalence relation $E' \rightrightarrows X'$, which therefore has quotient $S_{E'}$.
+
+  \item[Disjoint sums: ] In any sort $S$ of $T$, $S \times S$ has at least two disjoint definable sets, given by the diagonal relation $x =_S y$ and its complement $x \neq_S y$. We can define an equivalence relation $E$ on $S \times S$ whose classes are precisely these two definable sets, and $S_E$ will have two distinct constants $0$ and $1$. Let $X$ and $Y$ be two definable sets in $T^{\eq}$. We put
+    $$
+X \sqcup Y \dfeq \bigslant{X \times Y \times \{0,1\}}{E_{X \sqcup Y}},
+$$
+where
+$$
+(x,y,\epsilon) \sim_{E_{X \sqcup Y}} (x', y', \epsilon') \iff \epsilon = \epsilon' \te{ and }\begin{cases}
+  \te{if $\epsilon = \epsilon' = 0$, then $x = x'$} \\
+  \te{if $\epsilon = \epsilon' = 1$, then $y = y'$}.
+  \end{cases}
+  $$
+  Whenever we take points in a model, $X \sqcup Y$ as we have defined it is canonically isomorphic to $\{(x, 0) \stbar x \in X\} \cup \{(y, 1) \stbar y \in Y\}$ (unions of sets are not immediately available to us via $\lor$ if $X$ and $Y$ are differently-sorted, which is why we had to use the equivalence relation.) This determines the canonical inclusions $A \overset{\iota_A}{\longrightarrow} A \sqcup B \overset{\iota_B}{\longleftarrow} B$, and it is easy to see that their pullback is $0$.
+
+\item[Stability of disjoint sums: ] Consider a diagram of $T^{\eq}$-definable sets of the form
+  $$ \begin{tikzcd}[ampersand replacement = \&]
+  \& A \arrow{r}{\iota_A} \& A \sqcup B \\
+  A' \arrow{ur} \arrow{r} \& C' \arrow{ur} \& B \arrow[swap]{u}{\iota_B} \\
+  \& B' \arrow{u} \arrow{ur} \&
+\end{tikzcd}$$
+where $C'$ is a subobject of $A \sqcup B$ and $A'$ and $B'$ are pullbacks.
+
+There is a canonical definable map $A' \sqcup B' \to C'$ such that the following diagram commutes:
+$$
+\begin{tikzcd}[ampersand replacement = \&]
+A' \arrow{dr} \arrow{r}  \& C' \& B' \arrow{l} \arrow{dl} \\
+  \& A' \sqcup B' \arrow[dashed]{u}. \&
+\end{tikzcd}
+$$
+Since $\iota_A$ and $\iota_B$ are mono, their pullbacks $A' \to C'$ and $B' \to C'$ are also mono. Therefore, the map $A' \sqcup B' \to C'$ is also mono.
+
+On the other hand, in any model $M$ of $T^{\eq}$, every point $c \in M(C')$ is the image of something in $M(A')$ or $M(B')$; since the above diagram commutes, the function $M(A' \sqcup B') \to M(C')$ is surjective. Since $M$ was arbitrary, by the completeness theorem $T^{\eq}$ proves that $A' \sqcup B' \to C'$ is a bijection.
+  \end{description}
+\end{proof}
+
+We will spend the rest of this section proving that one may as well replace abstract interpretations between theories with elementary functors between $\Def(-)$ of $(-)^{\eq}$ of those theories.
+
+Here is what we are going to do. Given an abstract interpretation $I : T_1 \to T_2$, we can lift $I$ to a \emph{strict} abstract interpretation $I_t : T_1 \to T_2^{\eq}$ by quotienting out the equivalence relations interpreting the equality symbols in $T_1$, which then corresponds by Theorem \ref{thm-theories-are-boolean-logical-categories} to an elementary functor $\Def(T_1) \to \Def(T_2^{\eq})$. This determines a ``functor'' $$(-)_t : \mbf{Int}(T_1, T_2) \to \mbf{BoolLogCat}(\Def(T_1), \Def(T_2^{\eq}))$$ which will be an equivalence of categories.
+
+(We put scare quotes around ``functor'' because we have not defined a notion of morphism for abstract interpretations. In fact, we will tautologically \emph{define} morphisms of abstract interpretation $T_1 \to T_2$ to be transformations of the associated strict abstract interpretations $T_1 \to T_2^{\eq}$.)
+
+Dually, instead of lifting $I$ to $T_2^{\eq}$, we can extend $I$ to an abstract interpretation $\wh{I} : T_1^{\eq} \to T_2$. This determines a functor
+$$
+\wh{(-)} : \mbf{Int}(T_1,T_2) \to \mbf{Int}(T_1^{\eq},T_2)
+$$
+which will be an equivalence of categories.
+
+Let $\wt{(-)}$ denote the composition $(-)_t \circ \wh{(-)}$. Then the ``functor''
+$$
+\wt{(-)} : \mbf{Int}(T_1, T_2) \to \mbf{Pretop}(\Def(T_1^{\eq}),\Def(T_2^{\eq}))
+$$
+will be an equivalence of categories.
+
+\definition{
+  \label{def-I-t}
+  Let $I : T_1 \to T_2$ be an abstract interpretation. We define a strict abstract interpretation $I_t : T_1 \to T_2^{\eq}$ as follows. Let $X$ be a definable set of $T_1$ of sort $S$ with equality relation $=_S$. Let $E$ be the equality relation on $X$. Then we put $I_t(X)$ to be the following imaginary sort of $T^{\eq}$:
+  $$
+I_t(X) \dfeq \bigslant{I(X)}{I(=_S)} \simeq S_{I(E)} \in T_2^{\eq}.
+  $$
+  $I_t$ is a lift of $I$ along the canonical interpretation $T_2 \to T_2^{\eq}$, i.e. the following diagram commutes:
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+    \& T_2^{\eq} \\
+T_1 \arrow{ur}{I_t} \arrow[swap]{r}{I}    \& T_2 \arrow[swap]{u}.
+  \end{tikzcd}
+  $$
+  By Theorem \ref{thm-theories-are-boolean-logical-categories}, $I_t$ determines an elementary functor $F_{I_t} : \Def(T_1) \to \Def(T_2^{\eq})$.
+
+  We \emph{define} a morphism of two abstract interpretations $I, I' : T_1 \to T_2$ to be a transformation of the strict abstract interpretations $I_t, I'_t$. This obviously defines a category structure $\mbf{Int}(T_1, T_2)$ on the collection of abstract interpretations $T_1 \to T_2$, such that $I \mapsto I_t \mapsto F_{I_t}$ determines an equivalence of categories $\mbf{Int}(T_1, T_2) \simeq \mbf{BoolLogCat}(\Def(T_1), \Def(T_2^{\eq}))$.
+}
+
+\definition{\label{def-widehat-T}
+  Let $I : T_1 \to T_2$ be an abstract interpretation. We define an abstract interpretation $\wh{I} : T_1^{\eq} \to T_2$ as follows. For every imaginary sort $S_E = X/E$ in $T_1^{\eq}$,
+  $$
+\wh{I}(S_E) \dfeq I(X), \wh{I}(=_{S_E}) \dfeq I(E), \hspace{1mm} \te{ and }\hspace{1mm}\wh{I}(\Gamma(f_E)) \dfeq I(E).
+$$
+}
+Recall from Definition \ref{def-category-of-theories} that $\Th(T_1, T_2)$ denotes the category of strict interpretation $T_1 \to T_2$ with transformations as morphisms. The $\wh{(-)}$ construction determines a functor $\wh{(-)}: \mbf{Th}(T_1, T_2^{\eq}) \to \mbf{Th}(T_1^{\eq}, T_2^{\eq})$ as follows: for each transformation $\eta : I \to I'$, and for each imaginary sort $S_E \simeq X/E$ in $T_1^{\eq}$, it is easy to see that by virtue of being a transformation, $\eta_X : I(X) \to I'(X)$ descends to a map $\eta_{X/E} : I(X)/I(E) \to I'(X)/I'(E)$, and so we put
+$$
+\wh{\eta}(S_E) \dfeq \eta_{X/E}.
+$$
+
+We claim that $\wh{(-)} : \Th(T_1, T_2^{\eq}) \to \Th(T_1^{\eq}, T_2^{\eq}$ is an equivalence.
+
+There is a functor going the other way given by precomposing by the canonical interpretation $T_1 \to T_1^{\eq}$. This is a retract of $\wh{(-)}$, so $\wh{(-)}$ is faithful.
+
+$\wh{(-)}$ is full: for the definition of a transformation to be satisfied, the components of any transformation $\wh{I} \to \wh{I'}$ at imaginary sorts $S_E$ for $E \rightrightarrows X$ is determined by the component at $X$.
+
+$\wh{(-)}$ is essentially surjective: let $J : T_1^{\eq} \to T_2^{\eq}$ be some strict interpretation. Let $J'$ be the interpretation obtained by precomposing by the interpretation $T_1 \to T_1^{\eq}$ and then applying the $\wh{(-)}$ construction again. Since $J$ was an interpretation, $J(S_E)$ is canonically isomorphic to the quotient of $J(X)$ by $J(E)$, which is $J'(S_E)$. These canonical isomorphisms determine a natural isomorphism $J \simeq J'$.
+
+The functor $\mbf{Th}(T_1, T_2^{\eq}) \to \mbf{Th}(T_1^{\eq}, T_2^{\eq})$ determines a functor
+$$
+\mbf{Int}(T_1, T_2) \to \mbf{Int}(T_1^{\eq}, T_2),
+$$
+and since $\mbf{Th}(T_1, T_2^{\eq}) \to \mbf{Th}(T_1^{\eq}, T_2^{\eq})$ was an equivalence, so is $\mbf{Int}(T_1, T_2) \to \mbf{Int}(T_1^{\eq}, T_2).$
+
+\definition{\label{def-pretopos-completion}
+Let $\mbf{C}$ be a Boolean logical category. The \tbf{pretopos completion} of $\mbf{C}$ is
+$$
+\wt{\mbf{C}} \dfeq \Def\left(\left(T_{\mbf{C}}\right)^{\eq}\right).
+$$
+}
+
+\definition{
+Let $F : \mbf{C} \to \mbf{C}'$ be an elementary functor between Boolean logical categories. We define the \tbf{pretopos completion} of $F$ to be
+$$
+\wt{F} : \wt{\mbf{C}} \to \wt{\mbf{C}'}
+$$
+in the sense of $\wt{(-)} \dfeq \wh{(-)} \circ (-)_t$ in the above discussion.
+
+Identifying theories with Boolean logical categories, we also define the pretopos completion $\wt{I}$ of an abstract interpretation $I : T_1 \to T_2$ to be the strict abstract interpretation $\wt{I} : T_1^{\eq} \to T_2^{\eq}$.
+}
+
+
+\section{Categories of models}
+
+\definition{\label{def-elementary-embedding}
+  Let $M$ and $N$ be models of $T$. An \tbf{elementary embedding} $f : M \to N$ comprises the following data:
+  \begin{enumerate}
+  \item For every sort $S$ of $T$, a function $f_S : M(S) \to N(S)$, such that
+  \item the collection $\{f_S\}$ is compatible with forming tuples of sorts: if $S$ is a tuple of basic sorts $S = (B_1, \dots, B_n)$, $f_S = f_{B_1} \times \dots \times f_{B_n}$, and furthermore
+  \item for every tuple $\ol{a}$ of sort $S$ and every formula $\varphi(\ol{x})$ such that $M \models \varphi(\ol{a})$, $N \models \varphi(f_S(\ol{a}))$.
+  \end{enumerate}
+  }
+
+  \definition{
+    \label{def-mod-t}
+    The \tbf{category of models} of a theory $T$ is defined to be:
+    $$
+\Mod(T) \dfeq \begin{cases} \text{Objects: } \te{models of $T$},\\
+\text{Morphisms: } \te{elementary embeddings.}\end{cases}
+    $$
+  }
+
+  The category $\Set$ of all sets is a Boolean logical category, although unlike those Boolean loogical categories of the form $\Def(T)$ for theories $T$, $\Set$ is not small.
+
+  However, for every regular cardinal $\kappa$, the category $\Set_{\kappa}$ of all hereditarily $\kappa$-small sets is a small Boolean logical category. By the downward L\"owenheim-Skolem theorem, for every theory there exists some $\kappa$ such that one only needs to test points in $\kappa$-small models to invoke the completeness theorem, and $\Set = \bigcup_{\kappa} \Set_{\kappa}$.
+
+  \proposition{\label{prop-models-are-elementary-functors}
+    Every model $M \models T$ determines an elementary functor $\Def(T) \to \Set$.
+  }
+
+  \begin{proof}
+    By item 3 of \myref{Definition}{def-model}, a model is an assignment of sets to $\mc{L}$-formulas. Since $T$ proves that every definable function is a function, this must be true after taking points in a model, so this assignment is a functor $ M :\Def(T) \to \Set$. Now we must show that the functor $M$ is elementary.
+
+    To see that $M$ preserves finite limits, it suffices to check the preservation and reflection of limits on just products and equalizers.
+
+  The usual construction of an equalizer of two maps \(f,g : X \to Y\) in \(\mbf{Set}\) is always definable: it is the subset of $X$ consisting of those elements $x$ such that $f(x) = g(x)$.
+
+  Similarly, if $X$ and $Y$ are definable, then $X \times Y$ is definable, and the projections $X \times Y \overset{\pi_X}{\underset{\rightrightarrows}{\pi_Y}} X, Y$ are definable.
+
+  If \(J\) is a finite diagram in \(\mbf{Def}_M(T)\) and \(\cocolim J\) its limit, and \(Z \in \mbf{Def}_{M}(T)\) is a definable set in \(M\) equipped with a cone of definable maps to \(J\), then \(Z\) has (in \(\mbf{Set}\)) a unique mediating map to \(\cocolim J\), which is definable because it is definable in the cases when \(J\) is a product or equalizer diagram, the limit is finite, and by the canonical product-equalizer decomposition the mediating map for a general finite $J$ is a composition of finitely many mediating maps for products and equalizers.
+
+ To check preservation of finite sups, let $\{\varphi_1(x), \dots, \varphi_n(x)\}$ be a finite collection of formulas of the same sort. Then their sup is given by $\bigvee_{n} \varphi_i(x)$, and the sup of $\{\varphi_1(M), \dots, \varphi_n(M)\}$ is precisely $\bigcup_n \varphi_i(M)$. The empty sup is the empty formula, represented in $\Def(T)$ by the $T$-provable equivalence class of ``$x \neq x$'', and this is interpreted by $M$ as the empty set, which is the empty sup for any set in $\mbf{Set}$.
+
+  To check preservation of images, let $f$ be a definable function. The image of $f$ in $\Def(T)$ is just the formula which describes the image of $f$, and $M$ interprets this formula as the image of $f(M)$.
+\end{proof}
+
+\myref{Proposition}{prop-models-are-elementary-functors} determines an inclusion $\Mod(T) \hookrightarrow \mbf{BoolLogCat}(\Def(T), \Set)$.
+
+\proposition{\label{prop-elementary-functors-to-sets-are-models} The inclusion $\Mod(T) \hookrightarrow \mbf{BoolLogCat}(\Def(T),\Set)$ is an equivalence of categories.}
+
+\begin{proof}
+  Fix an elementary functor $F : \Def(T) \to \Set$. We must find a model $M$ such that $M \simeq F$ as elementary functors. Equivalently, we will show that we can ``perturb'' $F$ to a model (which is just an elementary functor with some additional strictness conditions) without changing its isomorphism type as a functor.
+
+  For every basic sort $B$, there are canonical isomorphisms $F(B^k) \simeq F(B)^k$. Up to isomorphism of functors (where the isomorphism of functors is given by conjugating by these canonical isomorphisms), we can assume therefore that $F(B^k) = F(B)^k$.
+
+  Furthermore, for every sort $\vec{B} = B_1 \times \dots \times B_n$, there are canonical isomorphisms $F(B_1 \times \dots \times B_n) \simeq F(B_1) \times \dots \times F(B_n)$. Again, up to isomorphism of functors, we can assume that $F(\vec{B}) = \vec{F(B)}$. Furthermore, if $\varphi(x)$ is a formula of sort $B$, then there is a canonical definable injection $\varphi(x) \hookrightarrow B$ such that the image of $F(\varphi(x) \hookrightarrow B)$ is a subset of $F(B)$; arguing as before, we can assume up to an isomorphism of functors that $F(\varphi(x)) \subseteq F(B)$. Similarly, we can assume up to an isomorphism of functors that if $T \models \forall x (\varphi(x) \rightarrow \psi(x))$, then $F(\varphi(x)) \subseteq F(\psi(x))$.
+
+  The canonical isomorphisms described so far induce isomorphisms of Boolean algebras $2^{\vec{B}} \simeq 2^{\vec{F(B)}}$. Therefore, up to isomorphism of functors, we can assume that $F(\varphi(x) \lor \psi(x)) = F(\varphi(x)) \cup F(\psi(x))$ (resp. $\land$ and negations).
+
+  Since $F$ preserves images, then for every definable function $f$, $F(\im(f)) \simeq \im(F(f))$. Then up to isomorphism of functors, $F(\im(f)) = \im(F(f))$.
+
+  Now we have, up to isomorphism, completely ``strictified'' $F$. It remains to show that an elementary functor which strictly preserves products, finite sups, and images is a model.
+
+  Indeed, let $\vec{c}$ be a tuple of terms such that $R(\vec{c})$ is an atomic sentence. Then by our previous reductions, $F(x = \vec{c}) \subseteq F(R(x))$, so $F \models R(\vec{c})$.
+
+  It is obvious that if $\varphi$ and $\psi$ satisfy that $(T \models \varphi \implies F \models \varphi)$ and $(T \models \psi \implies F \models \psi)$, then $(T \models \varphi \land \psi \implies F \models \varphi \land \psi)$.
+
+  If $\varphi(x)$ is a formula, then $T \models \exists x \varphi(x)$ if and only if the image of the projection of $\varphi(x)$ to the empty sort (which is the empty product, so is the terminal object $1$) is all of $1$. Since $F$ is a logical functor, it preserves the terminal object and all maps into the terminal object, so $F$ of the image of the projection of $\varphi(x)$ to the empty sort is still $1$. Then $F(\varphi(x))$ cannot be empty, since if it were, the image of its canonical map to $1$ would be the empty set. So $F \models \exists x \varphi(x)$.
+
+  Similarly, if $T \models \neg \psi$, then if $\psi$ is quantifier-free it is easy to see that $F \models \neg \psi$. If $\psi$ is of the form $\exists \varphi(x)$, then as a subobject of the terminal object $1$, $\exists x \varphi(x) = \emptyset$ the empty sup. Since $F$ is logical, it preserves empty sups, so again $\exists x \varphi(x) = \emptyset$ as a subobject of the terminal set $1$, and therefore, $F \models \neg \exists x \varphi(x)$.
+
+  This concludes the induction on complexity of formulas, and finishes the proof.
+\end{proof}
+
+  For any regular cardinal $\kappa$, $\Set_{\kappa}$ is a pretopos in addition to being a Boolean logical category. So, by the discussion above, we have equivalences
+$$
+\Mod(T) \simeq \mbf{BoolLogCat}(\Def(T), \Set_{\kappa}), \hspace{1mm} \te{ and } \hspace{1mm} \Mod(T^{\eq}) \simeq \mbf{Pretop}(\Def(T^{\eq}), \Set_{\kappa}).
+$$
+
+By the discussion following \myref{Definition}{def-widehat-T}, $\mbf{BoolLogCat}(\Def(T),\Set_{\kappa})$ and $\mbf{Pretop}(\Def(T^{\eq}), \Set)$ are equivalent. We conclude:
+
+\proposition{
+\label{prop-T-and-T-eq-have-the-same-models}
+For any theory $T$, the categories $\Mod(T)$ and $\Mod(T^{\eq})$ are equivalent.
+}
+
+\remark{
+  In the discussion following \myref{Definition}{def-widehat-T}, one can show that the canonical functor $\mbf{Pretop}(T^{\eq},\Set) \to \mbf{BoolLogCat}(T, \Set)$ induced by the canonical interpretation $T \to T^{\eq}$ is pseudo-inverse to the functor $\wh{(-)}$, so that the equivalence $\Mod(T) \simeq \Mod(T^{\eq})$ is given by the canonical functor $\Mod(T^{\eq}) \to \Mod(T)$ induced by the canonical interpretation $T \to T^{\eq}$.
+}
+
+\definition{\label{def-reduct-functor}In general, an interpretation $T \to T'$ induces a strict interpretation of pretopos completions $T^{\eq} \to T'^{\eq}$ and thus an elementary functor $\Def(T^{\eq}) \to \Def(T'^{\eq})$. Since models are essentially elementary functors into $\Set$, the elementary functor $\Def(T^{\eq}) \to \Def(T'^{\eq})$ pulls back models of $T'$ to models of $T$, inducing a functor $\Mod(T') \to \Mod(T)$. We call such functors between categories of models \tbf{reduct functors}. If $I : T \to T'$ is an abstract interpretation, we write $I^* : \Mod(T') \to \Mod(T)$ for the induced reduct functor.}
+
+\section{Notions of equivalence between the notions of interpretations}
+
+In this section, we examine various notions of equivalence between abstract interpretations, concrete interpretations, and elementary functors.
+
+The first notion is due to \cite{ahlbrandt-ziegler}.
+
+\definition{\label{concrete-homotopy}
+      Let $M \models T$ and $M' \models T'$, and let $(f ,f^*), (g, g^*) : M \to M'$ be concrete interpretations. We use the letter $U$ for the preimages of sorts along $f$, and we use the letter $V$ for the preimages of sorts along $g$.
+
+      We say that $(f, f^*)$ and $(g, g^*)$ are \tbf{homotopic} if for every sort $S$ of $T$, the pullbacks
+      $$
+      \begin{tikzcd}[ampersand replacement = \&]
+      U_S \times_{M(S)} V_S \arrow{r} \arrow{d}  \& V_S \arrow[two heads]{d}{g} \\
+      U_S \arrow[swap, two heads]{r}{f}  \& M(S)
+      \end{tikzcd}
+      $$
+      are definable in $M'$.
+    }
+
+\remark{\label{last-remark}    Note that if $f_S$ and $g_S$ are injective, then the above pullback describes the graph of a bijection $U_S \simeq V_S$.}
+
+    We define the analogous notion for abstract interpretations.
+
+\definition{
+  \label{abstract-homotopy}
+  Let $I, I' : T_1 \to T_2$ be abstract interpretations. For every sort $S$, we denote by $E_S$ the definable equivalence relation in $T_2$ given by $I(x =_S y)$ (resp. $E'_S, I'$). A \tbf{homotopy} between $I$ and $I'$ comprises the following data:
+  \begin{enumerate}
+  \item For every sort $S$ of $T_1$, a definable relation $R_S \hookrightarrow I(S) \times I'(S)$, such that the following conditions are satisfied:
+  \item (Naturality mod $E$ and $E'$) For every formula $\varphi(x)$ of sort $S$,
+    $$
+T_2 \entails (\forall x \in I(\varphi(x))) \bigl[R_S(x,y) \rightarrow (\exists y' \in I'(\varphi(x)))[E'_S(y, y')] \bigr].
+$$
+\item (Univalence mod $E$ and $E'$) $$
+T_2 \entails (\forall x_1, x_2 \in I(S)) (\forall y_1, y_2 \in I'(S))\bigl[E_S(x_1, X_2) \rightarrow \left(R_S(x_1, y_1) \land R_S(x_2, y_2) \rightarrow E'_S(y_1, y_2) \right) \bigr].
+$$
+\item (Injectivity mod $E$ and $E'$)
+  $$
+T_2 \entails (\forall x_1, x_2 \in I(S)) (\forall y_1, y_2 \in I'(S)) \bigl[E'_S(y_1, y_2) \land R_S(x_1, y_1) \land R_S(x_2, y_2) \rightarrow E_S(x_1, x_2)  \bigr].
+$$
+\item (Surjectivity mod $E$ and $E'$)
+  $$
+T_2 \entails (\forall y \in I'(S)) (\exists x \in I(S)) \bigl[ R_S(x,y) \bigr].
+  $$
+  \end{enumerate}
+}
+
+Finally, given two elementary functors $F, F' : \mbf{C}_1 \to \mbf{C}_2$, a natural notion of equivalence is just natural isomorphism of functors.
+
+An immediate consequence of \myref{Definition}{abstract-homotopy} is:
+
+    \proposition{
+      Let $I$ and $I'$ be abstract interpretations $T_1 \to T_2$. $I$ and $I'$ are abstractly homotopic if and only if the elementary functors associated to their pretopos completions
+      $$
+F_{\wt{I}}, F_{\wt{I'}} : \Def(T_1^{\eq}) \to \Def(T_2^{\eq})
+      $$
+      are naturally isomorphic.
+      }
+      
+\corollary{
+  Let $I, I' : T_1 \to T_2$ be homotopic abstract interpretations. For any model $N \models T_2$, there exists an isomorphism $\{\sigma_S\}_{S \in \msf{Sorts}(T_1)}$ of models of $T_1$ such that the following diagram commutes:
+  $$
+  \begin{tikzcd}[ampersand replacement = \&]
+I^*(N) \arrow[swap]{dd}{\sigma} \arrow{dr}{(f_I, f_I^*)}  \& \\
+    \& N \\
+I'^*(N) \arrow[swap]{ur}{(f_{I'}, f_{I'}^*)}.   \&
+\end{tikzcd}
+$$
+  }
+
+From \myref{Remark}{last-remark}, we get:
+  
+    \proposition{
+Let $M$ and $N$ be models of $T$ and $T'$. If two concrete interpretations $$(f, f^*), (g,g^*) : M \to N$$ are homotopic, then the underlying abstract interpretations $f^*, g^* : T \to T'$ are homotopic.
+      }
+    
+
+
+\bibliographystyle{siam}
+\bibliography{/home/pv/org/projects/mcmaster-thesis/jmhbib.bib}
+\end{document} 
