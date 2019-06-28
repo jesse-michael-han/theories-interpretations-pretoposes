@@ -1,0 +1,12 @@
+*~
+misc/
+*out
+*aux
+*fdb*
+*log
+*bbl
+auto/
+*log
+*blg
+*fls
+*toc

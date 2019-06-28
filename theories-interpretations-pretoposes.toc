@@ -1,6 +1,0 @@
-\contentsline {section}{\numberline {1}Theories and abstract interpretations}{2}{section.1}
-\contentsline {section}{\numberline {2}Structures and concrete interpretations}{2}{section.2}
-\contentsline {section}{\numberline {3}Categories of definable sets and elementary functors}{3}{section.3}
-\contentsline {section}{\numberline {4}Pretoposes and the $(-)^{\operatorname {eq}}$-construction}{15}{section.4}
-\contentsline {section}{\numberline {5}Categories of models}{22}{section.5}
-\contentsline {section}{\numberline {6}Notions of equivalence between the notions of interpretations}{24}{section.6}

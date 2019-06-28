@@ -1,0 +1,5 @@
+#+TITLE: Theories, interpretations, and pretoposes
+
+We explicate the relationships between interpretations of first-order theories, interpretations of first-order structures, and elementary functors between categories of definable sets and their pretopos completions.
+
+This is meant as a revised Chapter 1 to my [[https://github.com/jesse-michael-han/mcmaster-thesis/][master's thesis]].
